@@ -12,7 +12,7 @@
 
 
 // include main code functions
-
+require("inc_nas_devices.php");
 
 
 ?>
