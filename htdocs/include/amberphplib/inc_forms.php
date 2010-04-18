@@ -450,6 +450,7 @@ class form_input
 										^ - OBSOLETE: this option should be replaced by autoselect option		
 						["autoselect"]			Enabling this option will cause a radio or dropdown with just a single
 										entry to auto-select the single entry.
+						["nohidden"]			Disables the hidden field on text fields
 		
 			$option_array["values"] = array();			Array of values - used for radio or dropdown type fields
 			$option_array["translations"] = array();		Associate array used for labeling the values in radio or dropdown type fields
@@ -533,7 +534,11 @@ class form_input
 				$translation = language_translate_string($this->language, $this->structure[$fieldname]["defaultvalue"]);
 
 				print "$translation";
-				print "<input type=\"hidden\" name=\"$fieldname\" value=\"". $this->structure[$fieldname]["defaultvalue"] ."\">";
+
+				if (!isset($this->structure[$fieldname]["options"]["nohidden"]))
+				{
+					print "<input type=\"hidden\" name=\"$fieldname\" value=\"". $this->structure[$fieldname]["defaultvalue"] ."\">";
+				}
 			break;
 
 			case "textarea":
