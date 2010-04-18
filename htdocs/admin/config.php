@@ -39,15 +39,6 @@ class page_output
 		$this->obj_form->method = "post";
 
 
-		// API options
-		$structure = NULL;
-		$structure["fieldname"]				= "API_AUTH_KEY";
-		$structure["type"]				= "input";
-		$structure["options"]["no_translate_fieldname"]	= "yes";
-		$this->obj_form->add_input($structure);
-
-
-
 /*
 		// security options
 		$structure = NULL;
@@ -87,7 +78,6 @@ class page_output
 		
 		
 		// define subforms
-		$this->obj_form->subforms["config_api"]			= array("API_AUTH_KEY");
 //		$this->obj_form->subforms["config_security"]		= array("BLACKLIST_ENABLE", "BLACKLIST_LIMIT");
 		$this->obj_form->subforms["config_dateandtime"]		= array("DATEFORMAT", "TIMEZONE_DEFAULT");
 		$this->obj_form->subforms["submit"]			= array("submit");

@@ -14,6 +14,8 @@
 // include main code functions
 require("inc_nas_devices.php");
 require("inc_ldap_authlookup.php");
+require("inc_servers.php");
+require("inc_api.php");
 
 
 ?>

@@ -348,7 +348,7 @@ class nas_device
 		{
 			$sql_obj->trans_rollback();
 
-			log_write("error", "inc_customers", "An error occured whilst trying to delete the customer.");
+			log_write("error", "nas_device", "An error occured whilst trying to delete the selected NAS.");
 
 			return 0;
 		}
@@ -356,7 +356,7 @@ class nas_device
 		{
 			$sql_obj->trans_commit();
 
-			log_write("notification", "inc_customers", "Customer has been successfully deleted.");
+			log_write("notification", "nas_device", "NAS has been successfully deleted.");
 
 			return 1;
 		}
