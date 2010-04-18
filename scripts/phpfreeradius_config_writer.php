@@ -17,27 +17,41 @@
 	CONFIGURATION
 */
 
-include("include/config.php");
-
-
+require("include/config.php");
+require("include/amberphplib/main.php");
 
 
 /*
 	Initiate connection & authenticate to phpfreeradius
 
 */
-$client = new SoapClient("$url/phpfreeradius/phpfreeradius.wsdl");
-$client->__setLocation("$url/phpfreeradius/phpfreeradius.php");
+$client = new SoapClient($GLOBALS["config"]["api_url"] ."/phpfreeradius.wsdl");
+$client->__setLocation($GLOBALS["config"]["api_url"] ."/phpfreeradius.php");
 
 
 // login & get PHP session ID
 try
 {
-	$client->authenticate($GLOBALS["api_server_name"], $GLOBALS["api_auth_key"]);
+	log_write("debug", "script", "Authenticating with API as radius server ". $GLOBALS["config"]["api_server_name"] ."...");
+
+	if ($client->authenticate($GLOBALS["config"]["api_server_name"], $GLOBALS["config"]["api_auth_key"]))
+	{
+		log_write("debug", "script", "Authentication successful");
+	}
+
 }
 catch (SoapFault $exception)
 {
-	die( "Fatal Error: ". $exception->getMessage() ."\n");
+	if ($exception->getMessage() == "ACCESS_DENIED")
+	{
+		log_write("error", "script", "Unable to authenticate with phpfreeradius API - check that auth API key and server name are valid");
+		die("Fatal Error");
+	}
+	else
+	{	
+		log_write("error", "script", "Unknown failure whilst attempting to authenticate with the API - ". $exception->getMessage() ."");
+		die("Fatal Error");
+	}
 }
 
 
@@ -47,7 +61,7 @@ catch (SoapFault $exception)
 */
 try
 {
-	if (!$client->server_check_current())
+	if (!$client->server_config_current())
 	{
 		/*
 			Configuration is out of date - we need to fetch all the NAS records
@@ -75,6 +89,10 @@ catch (SoapFault $exception)
 /*
 	Write Configuration
 */
+
+
+
+
 
 
 ?>
