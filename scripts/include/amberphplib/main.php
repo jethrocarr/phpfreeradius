@@ -140,103 +140,106 @@ require("inc_phone_home.php");
 log_debug("start", "Framework Load Complete.");
 
 
-/*
-	Configure Local Timezone
 
-	Decent timezone handling was only implemented with PHP 5.2.0, so the ability to select the user's localtime zone
-	is limited to users running this software on PHPv5 servers.
-
-	Users of earlier versions will be limited to just using the localtime of the server - the effort required
-	to try and add timezone for older users (mainly PHPv4) is not worthwhile when everyone should be moving to PHP 5.2.0+
-	in the near future.
-*/
-
-if (version_compare(PHP_VERSION, '5.2.0') === 1)
+if ($_SESSION["mode"] != "cli")
 {
-	log_debug("start", "Setting timezone based on user/system configuration");
-	
-	// fetch config option
-	if (isset($_SESSION["user"]["timezone"]))
-	{
-		// fetch from user preferences
-		$timezone = $_SESSION["user"]["timezone"];
-	}
-	else
-	{
-		// user hasn't chosen a default time format yet - use the system default
-		$timezone = sql_get_singlevalue("SELECT value FROM config WHERE name='TIMEZONE_DEFAULT' LIMIT 1");
-	}
+	/*
+		Configure Local Timezone
 
-	// if set to SYSTEM just use the default of the server, otherwise
-	// we need to set the timezone here.
-	if ($timezone == "SYSTEM")
-	{
-		// set to the server default
-		log_debug("start", "Using server timezone default");
-		@date_default_timezone_set(@date_default_timezone_get());
-	}
-	else
-	{
-		// set to user selected or application default
-		log_debug("start", "Using application configured timezone");
+		Decent timezone handling was only implemented with PHP 5.2.0, so the ability to select the user's localtime zone
+		is limited to users running this software on PHPv5 servers.
 
-		if (!date_default_timezone_set($timezone))
+		Users of earlier versions will be limited to just using the localtime of the server - the effort required
+		to try and add timezone for older users (mainly PHPv4) is not worthwhile when everyone should be moving to PHP 5.2.0+
+		in the near future.
+	*/
+
+	if (version_compare(PHP_VERSION, '5.2.0') === 1)
+	{
+		log_debug("start", "Setting timezone based on user/system configuration");
+		
+		// fetch config option
+		if (isset($_SESSION["user"]["timezone"]))
 		{
-			log_write("error", "start", "A problem occured trying to set timezone to \"$timezone\"");
+			// fetch from user preferences
+			$timezone = $_SESSION["user"]["timezone"];
 		}
 		else
 		{
-			log_debug("start", "Timezone set to \"$timezone\" successfully");
+			// user hasn't chosen a default time format yet - use the system default
+			$timezone = sql_get_singlevalue("SELECT value FROM config WHERE name='TIMEZONE_DEFAULT' LIMIT 1");
 		}
+
+		// if set to SYSTEM just use the default of the server, otherwise
+		// we need to set the timezone here.
+		if ($timezone == "SYSTEM")
+		{
+			// set to the server default
+			log_debug("start", "Using server timezone default");
+			@date_default_timezone_set(@date_default_timezone_get());
+		}
+		else
+		{
+			// set to user selected or application default
+			log_debug("start", "Using application configured timezone");
+
+			if (!date_default_timezone_set($timezone))
+			{
+				log_write("error", "start", "A problem occured trying to set timezone to \"$timezone\"");
+			}
+			else
+			{
+				log_debug("start", "Timezone set to \"$timezone\" successfully");
+			}
+		}
+
+		unset($timezone);
 	}
 
-	unset($timezone);
-}
+
+
+	/*
+		Preload Language DB
+
+		The translation/errorloading options can be handled in one of two ways:
+		1. Preload all entries for the selected language (more memory, few SQL queries)
+		2. Only load translations as required (more SQL queries, less memory)
+	*/
 
 
 
-/*
-	Preload Language DB
-
-	The translation/errorloading options can be handled in one of two ways:
-	1. Preload all entries for the selected language (more memory, few SQL queries)
-	2. Only load translations as required (more SQL queries, less memory)
-*/
-
-
-
-// ensure a language has been set in the user's profile, otherwise select
-// a default from the main configuration database
-if (!isset($_SESSION["user"]["lang"]))
-{
-	$_SESSION["user"]["lang"] = sql_get_singlevalue("SELECT value FROM config WHERE name='LANGUAGE_DEFAULT' LIMIT 1");
-}
-
-
-// determine whether or not to preload the language
-$language_mode			= sql_get_singlevalue("SELECT value FROM config WHERE name='LANGUAGE_LOAD' LIMIT 1");
-$GLOBALS["cache"]["lang_mode"]	= $language_mode;
-
-if ($language_mode == "preload")
-{
-	log_debug("start", "Preloading Language DB");
-
-
-	// load all transactions
-	$sql_obj		= New sql_query;
-	$sql_obj->string	= "SELECT label, translation FROM `language` WHERE language='". $_SESSION["user"]["lang"] ."'";
-	$sql_obj->execute();
-	$sql_obj->fetch_array();
-
-	foreach ($sql_obj->data as $data)
+	// ensure a language has been set in the user's profile, otherwise select
+	// a default from the main configuration database
+	if (!isset($_SESSION["user"]["lang"]))
 	{
-		// add to cache
-		$GLOBALS["cache"]["lang"][ $data["label"] ] = $data["translation"];
+		$_SESSION["user"]["lang"] = sql_get_singlevalue("SELECT value FROM config WHERE name='LANGUAGE_DEFAULT' LIMIT 1");
 	}
 
-	log_debug("start", "Completed Language DB Preload");
-}
 
+	// determine whether or not to preload the language
+	$language_mode			= sql_get_singlevalue("SELECT value FROM config WHERE name='LANGUAGE_LOAD' LIMIT 1");
+	$GLOBALS["cache"]["lang_mode"]	= $language_mode;
+
+	if ($language_mode == "preload")
+	{
+		log_debug("start", "Preloading Language DB");
+
+
+		// load all transactions
+		$sql_obj		= New sql_query;
+		$sql_obj->string	= "SELECT label, translation FROM `language` WHERE language='". $_SESSION["user"]["lang"] ."'";
+		$sql_obj->execute();
+		$sql_obj->fetch_array();
+
+		foreach ($sql_obj->data as $data)
+		{
+			// add to cache
+			$GLOBALS["cache"]["lang"][ $data["label"] ] = $data["translation"];
+		}
+
+		log_debug("start", "Completed Language DB Preload");
+	}
+}
 
 
 ?>
