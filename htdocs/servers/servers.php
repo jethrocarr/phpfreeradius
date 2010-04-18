@@ -62,11 +62,11 @@ class page_output
 		{
 			if ($sync_status_config != $this->obj_table->data[$i]["api_sync_config"])
 			{
-				$this->obj_table->data["sync_status"]	= "<span class=\"table_highlight_important\">". lang_trans("status_unsynced") ."</span>";
+				$this->obj_table->data[$i]["sync_status"]	= "<span class=\"table_highlight_important\">". lang_trans("status_unsynced") ."</span>";
 			}
 			else
 			{
-				$this->obj_table->data["sync_status"]	= "<span class=\"table_highlight_open\">". lang_trans("status_synced") ."</span>";
+				$this->obj_table->data[$i]["sync_status"]	= "<span class=\"table_highlight_open\">". lang_trans("status_synced") ."</span>";
 			}
 		}
 
