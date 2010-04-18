@@ -10,12 +10,12 @@
 
 
 /*
-	CLASS NAS_DEVICES
+	CLASS NAS_DEVICE
 
 	Provides functions for querying and managing NAS devices in the
 	database.
 */
-class nas_devices
+class nas_device
 {
 	var $id;		// ID of the NAS device to manipulate (if any)
 	var $data;
@@ -137,7 +137,13 @@ class nas_devices
 	{
 		log_debug("nas_devices", "Executing verify_nas_ldapgroup()");
 
-		// TODO: do stuff here for the lols
+		$obj_ldap = New ldap_auth_lookup;
+		$obj_ldap->list_groups();
+
+		if (!in_array($this->data["nas_ldapgroup"], $obj_ldap->data))
+		{
+			return 0;
+		}
 		
 		return 1;
 
@@ -258,7 +264,7 @@ class nas_devices
 						."nas_secret='". $this->data["nas_secret"] ."', "
 						."nas_type='". $this->data["nas_type"] ."', "
 						."nas_ldapgroup='". $this->data["nas_ldapgroup"] ."', "
-						."nas_description='". $this->data["nas_description"] ."', "
+						."nas_description='". $this->data["nas_description"] ."' "
 						."WHERE id='". $this->id ."' LIMIT 1";
 		$sql_obj->execute();
 
@@ -323,6 +329,14 @@ class nas_devices
 		*/
 			
 		$sql_obj->string	= "DELETE FROM nas_devices WHERE id='". $this->id ."' LIMIT 1";
+		$sql_obj->execute();
+
+
+		/*
+			Un-associated any matched log entries
+		*/
+
+		$sql_obj->string	= "UPDATE logs SET id_nas='0' WHERE id_nas='". $this->id ."'";
 		$sql_obj->execute();
 
 

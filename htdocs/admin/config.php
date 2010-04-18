@@ -46,6 +46,8 @@ class page_output
 		$structure["options"]["no_translate_fieldname"]	= "yes";
 		$this->obj_form->add_input($structure);
 
+
+
 /*
 		// security options
 		$structure = NULL;
@@ -61,6 +63,7 @@ class page_output
 		$structure["options"]["no_translate_fieldname"]	= "yes";
 		$this->obj_form->add_input($structure);
 */
+
 
 		// misc	
 		$structure = form_helper_prepare_timezonedropdown("TIMEZONE_DEFAULT");

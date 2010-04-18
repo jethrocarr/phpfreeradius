@@ -2,7 +2,7 @@
 /*
 	admin/config-process.php
 	
-	Access: ldapadmins only
+	Access: radiusadmins only
 
 	Updates the system configuration.
 */
@@ -13,33 +13,16 @@ include_once("../include/config.php");
 include_once("../include/amberphplib/main.php");
 
 
-if (user_permissions_get("ldapadmins"))
+if (user_permissions_get("radiusadmins"))
 {
 	////// INPUT PROCESSING ////////////////////////
 
 
 	// fetch all the data
-	$data["AUTO_INT_UID"]			= security_form_input_predefined("int", "AUTO_INT_UID", 1, "");
-	$data["AUTO_INT_GID"]			= security_form_input_predefined("int", "AUTO_INT_GID", 1, "");
-	$data["FEATURE_RADIUS"]			= security_form_input_predefined("checkbox", "FEATURE_RADIUS", 0, "");
+	$data["API_AUTH_KEY"]				= security_form_input_predefined("any", "API_AUTH_KEY", 1, "");
+	$data["DATEFORMAT"]				= security_form_input_predefined("any", "DATEFORMAT", 1, "");
+	$data["TIMEZONE_DEFAULT"]			= security_form_input_predefined("any", "TIMEZONE_DEFAULT", 1, "");
 
-	$data["BLACKLIST_ENABLE"]		= security_form_input_predefined("any", "BLACKLIST_ENABLE", 0, "");
-	$data["BLACKLIST_LIMIT"]		= security_form_input_predefined("int", "BLACKLIST_LIMIT", 1, "");
-	
-	$data["DATEFORMAT"]			= security_form_input_predefined("any", "DATEFORMAT", 1, "");
-	$data["TIMEZONE_DEFAULT"]		= security_form_input_predefined("any", "TIMEZONE_DEFAULT", 1, "");
-
-
-	if ($data["FEATURE_RADIUS"])
-	{
-		$data["FEATURE_RADIUS"]			= "enabled";
-		$data["FEATURE_RADIUS_MAXVENDOR"]	= security_form_input_predefined("int", "FEATURE_RADIUS_MAXVENDOR", 1, "");
-	}
-	else
-	{
-		$data["FEATURE_RADIUS"] = "disabled";
-	}
-		
 
 
 	//// PROCESS DATA ////////////////////////////

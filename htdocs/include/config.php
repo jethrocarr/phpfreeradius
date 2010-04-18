@@ -32,20 +32,11 @@ ini_set('memory_limit', '32M');			// note that phpfreeradius doesn't need much R
 
 
 
-/*
-	Inherit User Configuration
-*/
-require("config-settings.php");
-
-
 
 /*
-	Fixed options
-
-	Do not touch anything below this line
+	Initate session variables
 */
 
-// Initate session variables
 if ($_SERVER['SERVER_NAME'])
 {
 	// proper session variables
@@ -58,6 +49,13 @@ else
 	$GLOBALS["_SESSION"]	= array();
 	$_SESSION["mode"]	= "cli";
 }
+
+
+
+/*
+	Inherit User Configuration
+*/
+require("config-settings.php");
 
 
 
