@@ -268,7 +268,13 @@ class nas_device
 						."WHERE id='". $this->id ."' LIMIT 1";
 		$sql_obj->execute();
 
-		
+	
+
+		/*
+			Update Configuration Version
+		*/
+		$sql_obj->string	= "UPDATE `config` SET value='". time() ."' WHERE name='SYNC_STATUS_CONFIG' LIMIT 1";
+		$sql_obj->execute();
 
 
 		/*
@@ -338,6 +344,14 @@ class nas_device
 
 		$sql_obj->string	= "UPDATE logs SET id_nas='0' WHERE id_nas='". $this->id ."'";
 		$sql_obj->execute();
+
+
+		/*
+			Update Configuration Version
+		*/
+		$sql_obj->string	= "UPDATE `config` SET value='". time() ."' WHERE name='SYNC_STATUS_CONFIG' LIMIT 1";
+		$sql_obj->execute();
+
 
 
 		/*

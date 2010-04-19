@@ -23,6 +23,17 @@ class api_phpfreeradius
 
 
 	/*
+		constructor
+	*/
+	function api_phpfreeradius()
+	{
+		$this->auth_server	= $_SESSION["auth_server"];
+		$this->auth_online	= $_SESSION["auth_online"];
+	}
+
+
+
+	/*
 		authenticate
 
 		Authenticates a SOAP client call using the SOAP_API_KEY configuration option to enable/prevent access
@@ -54,8 +65,11 @@ class api_phpfreeradius
 		{
 			$sql_obj->fetch_array();
 
-			$this->auth_online	= 1;
-			$this->auth_server	= $sql_obj->data[0]["id"];
+			$this->auth_online		= 1;
+			$this->auth_server		= $sql_obj->data[0]["id"];
+
+			$_SESSION["auth_online"]	= $this->auth_online;
+			$_SESSION["auth_server"]	= $this->auth_server;
 
 			return $this->auth_server;
 		}
@@ -119,17 +133,17 @@ class api_phpfreeradius
 
 
 	/*
-		server_config_current
+		check_update_version
 
 		Return whether or not the connected server is out of date with configuration or not.
 
 		Returns
-		0	Out of Sync
-		1	All Good
+		0	Radius server has the latest configuration
+		#	Out of date, timestamp version ID returned
 	*/
-	function server_config_current()
+	function check_update_version()
 	{
-		log_write("debug", "api_phpfreeradius", "Executing server_config_current()");
+		log_write("debug", "api_phpfreeradius", "Executing check_update_version()");
 
 
 		if ($this->auth_online)
@@ -143,13 +157,13 @@ class api_phpfreeradius
 			{
 				log_write("debug", "api_phpfreeradius", "Configuration is OUT OF SYNC!");
 
-				return 0;
+				return sql_get_singlevalue("SELECT value FROM config WHERE name='SYNC_STATUS_CONFIG' LIMIT 1");
 			}
 			else
 			{
-				log_write("debug", "api_phpfreeradius", "Configuration is uptodate");
+				log_write("debug", "api_phpfreeradius", "Configuration is all up-to-date");
 
-				return 1;
+				return 0;
 			}
 		}
 		else
@@ -157,7 +171,100 @@ class api_phpfreeradius
 			throw new SoapFault("Sender", "ACCESS_DENIED");
 		}
 
-	} // end of server_config_current
+	} // end of check_update_version
+
+
+
+	/*
+		set_update_version
+
+		Update the version field for the specific radius server
+
+		Fields
+		version		Timestamp version of the configuration applied - should be what as originally supplied
+				with the check_update_version function.
+
+		Returns
+		0		Failure
+		1		Success
+	*/
+	function set_update_version($version)
+	{
+		log_write("debug", "api_phpfreeradius", "Executing set_update_version($version)");
+
+
+		if ($this->auth_online)
+		{
+			$obj_server		= New radius_server;
+			$obj_server->id		= $this->auth_server;
+
+			return $obj_server->action_update_version($version);
+		}
+		else
+		{
+			throw new SoapFault("Sender", "ACCESS_DENIED");
+		}
+
+	} // end of set_update_version
+
+
+
+	/*
+		fetch_nas_config
+
+		Fetches and returns an array of all the NAS configuration, used for writing
+		configuration files for FreeRadius.
+
+		Returns
+		0		Failure
+		array		NAS configuration
+	*/
+	function fetch_nas_config()
+	{
+		log_write("debug", "api_phpfreeradius", "Executing fetch_nas_config()");
+
+
+		if ($this->auth_online)
+		{
+			// fetch NAS configuration
+			$sql_obj		= New sql_query;
+			$sql_obj->string	= "SELECT nas_hostname, nas_address, nas_secret, nas_types.nas_type as nas_type, nas_ldapgroup, nas_description FROM nas_devices LEFT JOIN nas_types ON nas_types.id = nas_devices.nas_type";
+			$sql_obj->execute();
+
+			if ($sql_obj->num_rows())
+			{
+				$sql_obj->fetch_array();
+
+				$return		= array();
+				$return_tmp	= array();
+
+				foreach ($sql_obj->data as $data_nas)
+				{
+					$return_tmp			= array();
+
+					$return_tmp["nas_hostname"]	= $data_nas["nas_hostname"];
+					$return_tmp["nas_address"]	= $data_nas["nas_address"];
+					$return_tmp["nas_secret"]	= $data_nas["nas_secret"];
+					$return_tmp["nas_type"]		= $data_nas["nas_type"];
+					$return_tmp["nas_ldapgroup"]	= $data_nas["nas_ldapgroup"];
+					$return_tmp["nas_description"]	= $data_nas["nas_description"];
+
+					$return[]	= $return_tmp;
+				}
+
+				return $return;
+			}
+
+			return 0;
+		}
+		else
+		{
+			throw new SoapFault("Sender", "ACCESS_DENIED");
+		}
+
+	} // end of fetch_nas_config
+
+
 
 
 				
