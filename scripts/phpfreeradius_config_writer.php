@@ -91,6 +91,7 @@ try
 	{
 		// all good
 		log_write("debug", "script", "System configuration is uptodate, no changes nessacary");
+		exit(0);
 	}
 	else
 	{
@@ -187,10 +188,33 @@ fwrite($fh, "\n");
 
 foreach ($data_nas as $nas)
 {
-	// ASSUMING A SINGLE IP ATM
 
-	// write huntgroup rule
-	fwrite($fh, $nas["nas_ldapgroup"] . "\tNAS-IP-Address == ". $nas["nas_address"] ."\n");
+	// determine the type of address
+	if (preg_match("/^(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:[.](?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}$/", $nas["nas_address"]))
+	{
+		// single IP, write a rule
+		fwrite($fh, $nas["nas_ldapgroup"] . "\tNAS-IP-Address == ". $nas["nas_address"] ."\n");
+	}
+	elseif (preg_match("/^(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:[.](?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}\/[0-9]*$/", $nas["nas_address"]))
+	{
+		// subnet in CIDR notation
+		// we need to calculate all the IP addresses in this subnet and then write them all to the configuration file
+
+		$addresses = ipv4_subnet_members($nas["nas_address"]);
+
+		foreach ($addresses as $address)
+		{
+			fwrite($fh, $nas["nas_ldapgroup"] . "\tNAS-IP-Address == $address\n");
+		}
+	}
+	else
+	{
+		// hostname
+		// need to fetch the associated IP address and then write to file
+
+		fwrite($fh, $nas["nas_ldapgroup"] . "\tNAS-IP-Address == ". gethostbyname($nas["nas_address"]) ."\n");
+	}
+
 
 	// special case for localhost (only used when testing)
 	if ($nas["nas_address"] == "127.0.0.1")
@@ -198,6 +222,11 @@ foreach ($data_nas as $nas)
 		// radtest identified as 255.255.255.255
 		fwrite($fh, $nas["nas_ldapgroup"] . "\tNAS-IP-Address == 255.255.255.255\n");
 	}
+
+
+	// spacer
+	fwrite($fh, "\n");
+
 }		        
 
 fwrite($fh, "\n");
