@@ -1122,4 +1122,59 @@ function dir_list_contents($directory='.')
 	return $files;
 }
 
+
+
+/*
+	IPv4 Networking Functions
+*/
+
+
+/*
+	ipv4_subnet_members
+
+	Returns an array of all IP addresses in the provided subnet
+
+	Fields
+	address_with_cidr	IP and subnet in CIDR notation (eg: 192.168.0.0/24)
+
+	Returns
+	0		Failure
+	array		Array of all IPs belonging to subnet
+*/
+
+function ipv4_subnet_members($address_with_cidr)
+{
+	log_write("debug", "inc_misc", "Executing ipv4_subnet_members($address_with_cidr)");
+
+	$address = explode('/', $address_with_cidr);			// eg: 192.168.0.0/24
+
+
+	// calculate subnet mask
+	$bin = NULL;
+
+	for ($i = 1; $i <= 32; $i++)
+	{
+		$bin .= $address[1] >= $i ? '1' : '0';
+	}
+
+	// calculate key values
+	$long_netmask	= bindec($bin);					// eg: 255.255.255.0
+	$long_network	= ip2long($address[0]);				// eg: 192.168.0.0
+	$long_broadcast	= ($long_network | ~($long_netmask));		// eg: 192.168.0.255
+
+
+	// run through the range and generate all possible IPs
+	// do not include mask/network IPs
+	$return = array();
+
+	for ($i = ($long_network + 1); $i < $long_broadcast; $i++)
+	{
+		$return[] = long2ip($i);
+	}
+
+	return $return;
+
+} // end of ipv4_subnet_members
+
+
 ?>
