@@ -20,7 +20,7 @@ $GLOBALS["config"]["app_name"]			= "phpfreeradius";
 $GLOBALS["config"]["app_version"]		= "1.0.0_alpha_1";
 
 // define the schema version required
-$GLOBALS["config"]["schema_version"]		= "2010040601";
+$GLOBALS["config"]["schema_version"]		= "20100420";
 
 
 

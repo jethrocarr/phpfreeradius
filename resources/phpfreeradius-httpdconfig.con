@@ -1,11 +1,10 @@
 #
-# LDAPAuthManager is an open-source PHP application for administrating
-# authentication LDAP databases and managing users/groups.
+# phpfreeradius is an administrative web interface for managing
+# FreeRadius servers.
 #
-#
-Alias /ldapauthmanager /usr/share/ldapauthmanager/htdocs
+Alias /phpfreeradius /usr/share/phpfreeradius/htdocs
 
-<Location /ldapauthmanager>
+<Location /phpfreeradius>
 	Order deny,allow
 	Allow from all
 	AllowOverride all

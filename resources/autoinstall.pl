@@ -6,7 +6,7 @@
 # This utility is licensed under the GNU AGPL Version 3.0
 #
 # This script is run manually by the user to setup the MySQL database
-# for the LDAPAuthManager application.
+# for the phpfreeradius application.
 #
 # * Create the MySQL database
 # * Create user in MySQL
@@ -23,17 +23,17 @@ use DBI;
 # default settings 
 # (only need to change these if you are doing development work)
 my $db_user		= "root";		# name of user to be used to create data
-my $db_name		= "ldapauthmanager";	# name of the DB to create
+my $db_name		= "phpfreeradius";	# name of the DB to create
 my $db_host		= "localhost";		# MySQL server
 
-my $db_bs_user		= "ldapauthmanager";	# name of the aoconf user to create
+my $db_bs_user		= "phpfreeradius";	# name of the aoconf user to create
 my $db_bs_password	= random_password(10);	# random password to generate
 
 # location of config.php file
-my $opt_cfgfile = "/etc/ldapauthmanager/config.php";
+my $opt_cfgfile = "/etc/phpfreeradius/config.php";
 
 # tmp file to use for SQL query generation
-my $opt_tmpfile = "/tmp/ldapauthmanager_mysqlquery";
+my $opt_tmpfile = "/tmp/phpfreeradius_mysqlquery";
 
 # location of install schema
 my $opt_schemadata;
@@ -66,10 +66,10 @@ system("chmod 600 $opt_tmpfile");
 
 print "autoinstall.pl\n";
 print "\n";
-print "This script setups the LDAPAuthManager database components:\n";
-print " * LDAPAuthManager MySQL user\n";
-print " * LDAPAuthManager database\n";
-print " * LDAPAuthManager configuration files\n";
+print "This script setups the phpfreeradius database components:\n";
+print " * phpfreeradius MySQL user\n";
+print " * phpfreeradius database\n";
+print " * phpfreeradius configuration files\n";
 print "\n";
 print "THIS SCRIPT ONLY NEEDS TO BE RUN FOR THE VERY FIRST INSTALL OF LDAPAUTHMANAGER.\n";
 print "DO NOT RUN FOR ANY OTHER REASON\n";
