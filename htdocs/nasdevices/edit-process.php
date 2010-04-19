@@ -80,6 +80,34 @@ if (user_permissions_get('radiusadmins'))
 	}
 
 
+	// check the address format - can be one of three types:
+	//	- single IP
+	//	- subnet with CIDR notation
+	//	- hostname
+
+	$expressions	= array();
+	$expressions[]	= "/^(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:[.](?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}$/";			// single IP
+	$expressions[]	= "/^(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:[.](?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}\/[0-9]*$/";		// CIDR notation subnet
+	$expressions[]	= "/^[a-zA-Z][a-zA-Z0-9.-]*$/";											// hostname
+
+	$match		= 0;
+
+	foreach ($expressions as $regex)
+	{
+		if (preg_match($regex, $obj_nas_device->data["nas_address"]))
+		{
+			$match = 1;
+		}
+	}
+
+	if (!$match)
+	{
+		// address did not match any known format
+		log_write("error", "process", "The supplied address is invalid - either a single IP (127.0.0.1), subnet (192.168.0.0/24) or hostname (host1.example.com) must be supplied as an address");
+
+		error_flag_field("nas_address");
+	}
+
 
 
 	/*

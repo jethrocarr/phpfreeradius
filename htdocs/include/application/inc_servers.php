@@ -251,7 +251,7 @@ class radius_server
 
 
 	/*
-		action_update_version
+		action_update_config_version
 
 		Updates the version of the configuration sync in the DB
 
@@ -262,9 +262,9 @@ class radius_server
 		0		failure
 		1		success
 	*/
-	function action_update_version($version)
+	function action_update_config_version($version)
 	{
-		log_debug("radius_server", "Executing action_update_version($version)");
+		log_debug("radius_server", "Executing action_update_config_version($version)");
 
 
 		/*
@@ -303,7 +303,64 @@ class radius_server
 			return 1;
 		}
 
-	} // end of action_update_version
+	} // end of action_update_config_version
+
+
+
+	/*
+		action_update_log_version
+
+		Update the version of the last log sync in the database
+
+		Values
+		version		timestamp version to use
+
+		Returns
+		0		failure
+		1		success
+	*/
+	function action_update_log_version($version)
+	{
+		log_debug("radius_server", "Executing action_update_log_version($version)");
+
+
+		/*
+			Start Transaction
+		*/
+		$sql_obj = New sql_query;
+		$sql_obj->trans_begin();
+
+
+		/*
+			Update configuration version
+		*/
+
+		$sql_obj->string	= "UPDATE `radius_servers` SET api_sync_log='$version' WHERE id='". $this->id ."' LIMIT 1";
+		$sql_obj->execute();
+
+
+		/*
+			Commit
+		*/
+
+		if (error_check())
+		{
+			$sql_obj->trans_rollback();
+
+			log_write("error", "radius_server", "An error occured when updating the radius server.");
+
+			return 0;
+		}
+		else
+		{
+			$sql_obj->trans_commit();
+
+			log_write("notification", "radius_server", "Radius server version has been successfully updated.");
+
+			return 1;
+		}
+
+	} // end of action_update_log_version
 
 
 

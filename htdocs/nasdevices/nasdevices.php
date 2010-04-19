@@ -39,9 +39,10 @@ class page_output
 		$this->obj_table->add_column("standard", "nas_address", "");
 		$this->obj_table->add_column("standard", "nas_type", "nas_types.nas_type");
 		$this->obj_table->add_column("standard", "nas_ldapgroup", "");
+		$this->obj_table->add_column("standard", "nas_description", "");
 
 		// defaults
-		$this->obj_table->columns		= array("nas_hostname", "nas_address", "nas_type", "nas_ldapgroup");
+		$this->obj_table->columns		= array("nas_hostname", "nas_address", "nas_type", "nas_ldapgroup", "nas_description");
 		$this->obj_table->columns_order		= array("nas_hostname");
 		$this->obj_table->columns_order_options	= array("nas_hostname", "nas_address", "nas_type", "nas_ldapgroup");
 

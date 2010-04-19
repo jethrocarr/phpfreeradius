@@ -104,7 +104,7 @@ class page_output
 		
 		
 		// define subforms
-		$this->obj_form->subforms["nas_delete"]		= array("server_name","server_description");
+		$this->obj_form->subforms["server_delete"]	= array("server_name","server_description");
 		$this->obj_form->subforms["hidden"]		= array("id_radius_server");
 		$this->obj_form->subforms["submit"]		= array("delete_confirm", "submit");
 

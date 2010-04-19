@@ -126,7 +126,7 @@ class page_output
 	function render_html()
 	{
 		// title + summary
-		print "<h3>NETWORK ACCESS SERVER ADD</h3><br>";
+		print "<h3>ADD NETWORK ACCESS SERVER</h3><br>";
 		print "<p>This page allows you to add a new NAS device.</p>";
 
 	

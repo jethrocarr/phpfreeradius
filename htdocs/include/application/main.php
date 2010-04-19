@@ -15,6 +15,7 @@
 require("inc_nas_devices.php");
 require("inc_ldap_authlookup.php");
 require("inc_servers.php");
+require("inc_radius_logs.php");
 
 
 ?>

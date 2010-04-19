@@ -86,10 +86,12 @@ class api_phpfreeradius
 	/*
 		log_write
 
+		Writes a new log value to the database
+
 		Fields
-		timestamp	UNIX timestamp
-		log_type	Category (max 10 char)
-		log_contents	Contents of log message
+		timestamp		UNIX timestamp
+		log_type		Category (max 10 char)
+		log_contents		Contents of log message
 	*/
 
 	function log_write($timestamp, $log_type, $log_contents)
@@ -99,29 +101,20 @@ class api_phpfreeradius
 		if ($this->auth_online)
 		{
 			// sanitise input
-			$code_customer = @security_script_input_predefined("any", $code_customer);
+			$timestamp	= @security_script_input_predefined("int", $timestamp);
+			$log_type	= @security_script_input_predefined("any", $log_type);
+			$log_contents	= @security_script_input_predefined("any", $log_contents);
 
-			if (!$code_customer || $code_customer == "error")
+			if (!$timestamp || $timestamp == "error" || !$log_type || $log_type == "error" || !$log_contents || $log_contents == "error")
 			{
 				throw new SoapFault("Sender", "INVALID_INPUT");
 			}
 
-			
-			// fetch the customer ID
-			$sql_obj		= New sql_query;
-			$sql_obj->string	= "SELECT id FROM customers WHERE code_customer='$code_customer' LIMIT 1";
-			$sql_obj->execute();
+			// write log
+			$obj_log 		= New radius_logs;
+			$obj_log->id_server	= $this->auth_server;
 
-			if ($sql_obj->num_rows())
-			{
-				$sql_obj->fetch_array();
-
-				return $sql_obj->data[0]["id"];
-			}
-			else
-			{
-				throw new SoapFault("Sender", "INVALID_ID");
-			}
+			$obj_log->log_push($timestamp, $log_type, $log_contents);
 		}
 		else
 		{
@@ -198,7 +191,7 @@ class api_phpfreeradius
 			$obj_server		= New radius_server;
 			$obj_server->id		= $this->auth_server;
 
-			return $obj_server->action_update_version($version);
+			return $obj_server->action_update_config_version($version);
 		}
 		else
 		{
