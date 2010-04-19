@@ -51,9 +51,9 @@ else
 			
 			// buttons
 			print "<br><p>";
-			print "<a class=\"button\" href=\"index.php?page=logs/logs.php\">View Free Radius Logs</a> ";
-			print "<a class=\"button\" href=\"index.php?page=nasdevices/nasdevices.php\">Manage NAS Devices</a> ";
-			print "<a class=\"button\" href=\"index.php?page=huntgroups/huntgroups.php\">NAS &lt;-&gt; Group Assignment</a> ";
+			print "<a class=\"button\" href=\"index.php?page=logs/logs.php\">". lang_trans("menu_logs") ."</a> ";
+			print "<a class=\"button\" href=\"index.php?page=nasdevices/nasdevices.php\">". lang_trans("menu_nasdevices") ."</a> ";
+			print "<a class=\"button\" href=\"index.php?page=servers/servers.php\">". lang_trans("menu_radius_servers") ."</a> ";
 
 			print "</p>";
 
