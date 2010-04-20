@@ -1,0 +1,9 @@
+#
+# PHPFREERADIUS INTEGRATION
+# Cron Jobs
+#
+
+# check for new configuration every minute
+*/1 * * * * root php -q /usr/share/phpfreeradius/scripts/phpfreeradius_config_writer.php >> /var/log/radius/phpfreeradius_config_writer
+
+

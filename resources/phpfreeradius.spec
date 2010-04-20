@@ -20,7 +20,7 @@ Summary: phpfreeradius web-based interface and API components
 Group: Applications/Internet
 
 Requires: httpd, mod_ssl
-Requires: php >= 5.1.6, mysql-server, php-mysql, php-ldap, php-soap
+Requires: php >= 5.3.0, mysql-server, php-mysql, php-ldap, php-soap
 Requires: perl, perl-DBD-MySQL
 Prereq: httpd, php, mysql-server, php-mysql
 
@@ -32,7 +32,7 @@ Provides the phpfreeradius interface and associated template configuration files
 Summary: FreeRadius integration components for phpfreeradius
 Group: Applications/Internet
 
-Requires: php >= 5.1.6, php-soap, php-process
+Requires: php-cli >= 5.3.0, php-soap, php-process
 Requires: perl, perl-DBD-MySQL
 
 %description integration
@@ -79,7 +79,9 @@ install -m 644 resources/phpfreeradius-httpdconfig.conf $RPM_BUILD_ROOT%{_syscon
 mkdir -p $RPM_BUILD_ROOT/etc/init.d/
 install -m 755 resources/phpfreeradiuslogging.rcsysinit $RPM_BUILD_ROOT/etc/init.d/phpfreeradiuslogging
 
-
+# install the cronfile
+mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/cron.d/
+install -m 644 resources/phpfreeradius-integration.cron $RPM_BUILD_ROOT%{_sysconfdir}/cron.d/phpfreeradius-integration
 
 
 %post interface
@@ -103,7 +105,7 @@ fi
 
 %post integration
 
-if [$1 == 0]
+if [$1 == 0];
 	# upgrading existing rpm
 	echo "Restarting logging process..."
 	/etc/init.d/phpfreeradiuslogging restart
@@ -143,6 +145,7 @@ rm -rf $RPM_BUILD_ROOT
 %files integration
 %defattr(-,root,root)
 %config %dir %{_sysconfdir}/phpfreeradius
+%config %dir %{_sysconfdir}/cron.d/phpfreeradius-integration
 %attr(770,root,apache) %config(noreplace) %{_sysconfdir}/phpfreeradius/config-integration.php
 %{_datadir}/phpfreeradius/scripts
 /etc/init.d/phpfreeradiuslogging
