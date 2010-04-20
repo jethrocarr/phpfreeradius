@@ -53,6 +53,7 @@ mkdir -p -m0755 $RPM_BUILD_ROOT%{_datadir}/phpfreeradius/
 # install application files and resources
 cp -pr * $RPM_BUILD_ROOT%{_datadir}/phpfreeradius/
 
+
 # install configuration file
 install -m0700 htdocs/include/sample-config.php $RPM_BUILD_ROOT%{_sysconfdir}/phpfreeradius/config.php
 ln -s %{_sysconfdir}/phpfreeradius/config.php $RPM_BUILD_ROOT%{_datadir}/phpfreeradius/htdocs/include/config-settings.php
@@ -60,11 +61,22 @@ ln -s %{_sysconfdir}/phpfreeradius/config.php $RPM_BUILD_ROOT%{_datadir}/phpfree
 # install linking config file
 install -m755 htdocs/include/config.php $RPM_BUILD_ROOT%{_datadir}/phpfreeradius/htdocs/include/config.php
 
+
+# install configuration file
+install -m0700 scripts/include/sample-config.php $RPM_BUILD_ROOT%{_sysconfdir}/phpfreeradius/config-integration.php
+ln -s %{_sysconfdir}/phpfreeradius/config-integration.php $RPM_BUILD_ROOT%{_datadir}/phpfreeradius/scripts/include/config-settings.php
+
+# install linking config file
+install -m755 scripts/include/config.php $RPM_BUILD_ROOT%{_datadir}/phpfreeradius/scripts/include/config.php
+
+
+
 # install the apache configuration file
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/httpd/conf.d
 install -m 644 resources/phpfreeradius-httpdconfig.conf $RPM_BUILD_ROOT%{_sysconfdir}/httpd/conf.d/phpfreeradius.conf
 
 # install the bootscript
+mkdir -p $RPM_BUILD_ROOT/etc/init.d/
 install -m 755 resources/phpfreeradiuslogging.rcsysinit $RPM_BUILD_ROOT/etc/init.d/phpfreeradiuslogging
 
 
@@ -132,8 +144,8 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 %config %dir %{_sysconfdir}/phpfreeradius
 %attr(770,root,apache) %config(noreplace) %{_sysconfdir}/phpfreeradius/config-integration.php
-%{_datadir}/phpfreeradius/integration
-/etc/init.d/phpfreeradiulogging.rcsysinit
+%{_datadir}/phpfreeradius/scripts
+/etc/init.d/phpfreeradiuslogging
 
 
 %changelog
