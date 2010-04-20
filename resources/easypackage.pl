@@ -40,8 +40,8 @@ print "Please enter version (eg: 20080419_beta0):\n";
 my $version = get_question('^\S*$');
 
 # determine final name
-my $name_base		= "ldapauthmanager";
-my $name_withversion	= "ldapauthmanager-$version";
+my $name_base		= "phpfreeradius";
+my $name_withversion	= "phpfreeradius-$version";
 
 
 # update CVS tag?
@@ -83,6 +83,7 @@ system("find $name_withversion/* -type d | grep CVS | sed \"s/^/rm -rf /\" | sh"
 
 # remove a config file if one exists
 system("rm -f $name_withversion/htdocs/include/config-settings.php");
+system("rm -f $name_withversion/scripts/include/config-settings.php");
 
 # insert version into spec file and write changed version to /tmp/ location
 open(IN, "$name_withversion/resources/$name_base.spec") || die("Unable to open spec file");

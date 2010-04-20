@@ -1,4 +1,4 @@
-Summary: A web-based interface for managing FreeRadius
+Summary: A web-based management system for FreeRadius servers, consisting of a PHP web interface and some PHP CLI components to hook into FreeRadius.
 Name: phpfreeradius
 Version: 1.0.0
 Release: 1.alpha.1%{?dist}
@@ -10,13 +10,34 @@ Source0: phpfreeradius-%{version}.tar.bz2
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
 BuildRequires: gettext
-Requires: httpd, mod_ssl
-Requires: php >= 5.1.6, mysql-server, php-mysql, php-ldap
-Requires: perl, perl-DBD-MySQL
-Prereq: httpd, php, mysql-server, php-mysql
 
 %description
 phpfreeradius is a web-based interface for managing and viewing FreeRadius configuration and logs.
+
+
+%package interface
+Summary: phpfreeradius web-based interface and API components
+Group: Applications/Internet
+
+Requires: httpd, mod_ssl
+Requires: php >= 5.1.6, mysql-server, php-mysql, php-ldap, php-soap
+Requires: perl, perl-DBD-MySQL
+Prereq: httpd, php, mysql-server, php-mysql
+
+%description interface
+Provides the phpfreeradius interface and associated template configuration files
+
+
+%package integration
+Summary: FreeRadius integration components for phpfreeradius
+Group: Applications/Internet
+
+Requires: php >= 5.1.6, php-soap, php-process
+Requires: perl, perl-DBD-MySQL
+
+%description integration
+Provides applications for linking FreeRadius to phpfreeradius via the administrative API.
+
 
 %prep
 %setup -q -n phpfreeradius-%{version}
@@ -43,8 +64,13 @@ install -m755 htdocs/include/config.php $RPM_BUILD_ROOT%{_datadir}/phpfreeradius
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/httpd/conf.d
 install -m 644 resources/phpfreeradius-httpdconfig.conf $RPM_BUILD_ROOT%{_sysconfdir}/httpd/conf.d/phpfreeradius.conf
 
+# install the bootscript
+install -m 755 resources/phpfreeradiuslogging.rcsysinit $RPM_BUILD_ROOT/etc/init.d/phpfreeradiuslogging
 
-%post
+
+
+
+%post interface
 
 # Reload apache
 echo "Reloading httpd..."
@@ -62,7 +88,17 @@ else
 fi
 
 
-%postun
+
+%post integration
+
+if [$1 == 0]
+	# upgrading existing rpm
+	echo "Restarting logging process..."
+	/etc/init.d/phpfreeradiuslogging restart
+fi
+
+
+%postun interface
 
 # check if this is being removed for good, or just so that an
 # upgrade can install.
@@ -73,15 +109,32 @@ then
 fi
 
 
+%preun integration
+
+# stop running process
+/etc/init.d/phpfreeradiuslogging stop
+
+
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%files
+%files interface
 %defattr(-,root,root)
 %config %dir %{_sysconfdir}/phpfreeradius
 %attr(770,root,apache) %config(noreplace) %{_sysconfdir}/phpfreeradius/config.php
 %attr(660,root,apache) %config(noreplace) %{_sysconfdir}/httpd/conf.d/phpfreeradius.conf
-%{_datadir}/phpfreeradius
+%{_datadir}/phpfreeradius/htdocs
+%{_datadir}/phpfreeradius/resources
+%{_datadir}/phpfreeradius/sql
+
+%files integration
+%defattr(-,root,root)
+%config %dir %{_sysconfdir}/phpfreeradius
+%attr(770,root,apache) %config(noreplace) %{_sysconfdir}/phpfreeradius/config-integration.php
+%{_datadir}/phpfreeradius/integration
+/etc/init.d/phpfreeradiulogging.rcsysinit
+
 
 %changelog
 * Tue Apr 20 2010 Jethro Carr <jethro.carr@amberdms.com> 1.0.0_alpha_1
