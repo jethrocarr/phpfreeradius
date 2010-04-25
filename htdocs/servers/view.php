@@ -154,7 +154,7 @@ class page_output
 				}
 				else
 				{
-					$this->obj_form->structure["sync_status_log"]["defaultvalue"]		= "<span class=\"table_highlight_green\">". lang_trans("status_synced") ."</span>";
+					$this->obj_form->structure["sync_status_log"]["defaultvalue"]		= "<span class=\"table_highlight_green\">". lang_trans("status_synced") ."</span> Last log message delivered on ". time_format_humandate($this->obj_radius_server->data["api_sync_log"]) ." ". date("H:i:s", $this->obj_radius_server->data["api_sync_log"]) ."";
 				}
 			}
 		}
