@@ -79,18 +79,32 @@ class page_output
 
 		// acceptable filter options
 		$structure = NULL;
-		$structure["fieldname"] = "searchbox";
-		$structure["type"]	= "input";
-		$structure["sql"]	= "(server_name LIKE '%value%' OR log_type LIKE '%value%' OR log_contents LIKE '%value%')";
+		$structure["fieldname"] 	= "searchbox";
+		$structure["type"]		= "input";
+		$structure["sql"]		= "(server_name LIKE '%value%' OR log_type LIKE '%value%' OR log_contents LIKE '%value%')";
+		$this->obj_table->add_filter($structure);
+
+		$structure = NULL;
+		$structure["fieldname"] 	= "num_logs_rows";
+		$structure["type"]		= "input";
+		$structure["sql"]		= "";
+		$structure["defaultvalue"]	= "1000";
 		$this->obj_table->add_filter($structure);
 
 
+
 		// load options
+		$this->obj_table->add_fixed_option("id", $this->obj_radius_server->id);
 		$this->obj_table->load_options_form();
 
-	
-		// load data
+
+		// generate SQL
 		$this->obj_table->generate_sql();
+
+		// load limit filter
+		$this->obj_table->sql_obj->string .= "LIMIT ". $this->obj_table->filter["filter_num_logs_rows"]["defaultvalue"];
+
+		// load data from DB
 		$this->obj_table->load_data_sql();
 
 	}

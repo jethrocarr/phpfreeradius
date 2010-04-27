@@ -39,7 +39,25 @@ class radius_logs
 	{
 		log_debug("radius_logs", "Executing log_push($timestamp, $log_type, $log_contents)");
 
-		// TODO: write automatic nas-log assignment code
+		// see if this log entry is related to any particular NAS
+		$sql_obj		= New sql_query;
+		$sql_obj->string	= "SELECT id, nas_hostname FROM nas_devices";
+		$sql_obj->execute();
+
+		if ($sql_obj->num_rows())
+		{
+			$sql_obj->fetch_array();
+
+			foreach ($sql_obj->data as $data)
+			{
+				if (preg_match("/". $data["nas_hostname"] ."/i", $log_contents))
+				{
+					$this->id_nas	= $data["id"];
+				}
+			}
+		}
+
+
 
 		// write log
 		$sql_obj		= New sql_query;

@@ -54,13 +54,34 @@ class page_output
 		$structure["sql"]	= "(server_name LIKE '%value%' OR log_type LIKE '%value%' OR log_contents LIKE '%value%')";
 		$this->obj_table->add_filter($structure);
 
+		$structure = NULL;
+		$structure["fieldname"] 	= "num_logs_rows";
+		$structure["type"]		= "input";
+		$structure["sql"]		= "";
+		$structure["defaultvalue"]	= "1000";
+		$this->obj_table->add_filter($structure);
+
+
+		$structure = form_helper_prepare_dropdownfromdb("id_radius_server", "SELECT id, server_name as label FROM radius_servers ORDER BY server_name");
+		$structure["type"]	= "dropdown";
+		$structure["sql"]	= "id_server='value'";
+		$this->obj_table->add_filter($structure);
+
+
+
+
 
 		// load options
 		$this->obj_table->load_options_form();
 
-	
-		// load data
+
+		// generate SQL
 		$this->obj_table->generate_sql();
+
+		// load limit filter
+		$this->obj_table->sql_obj->string .= "LIMIT ". $this->obj_table->filter["filter_num_logs_rows"]["defaultvalue"];
+
+		// load data
 		$this->obj_table->load_data_sql();
 
 	}

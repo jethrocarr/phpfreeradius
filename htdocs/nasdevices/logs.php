@@ -55,17 +55,86 @@ class page_output
 
 	function execute()
 	{
-		// nothing todo
-		return 1;
+		// establish a new table object
+		$this->obj_table = New table;
+
+		$this->obj_table->language	= $_SESSION["user"]["lang"];
+		$this->obj_table->tablename	= "logs_nas_devices";
+
+		// define all the columns and structure
+		$this->obj_table->add_column("timestamp", "timestamp", "");
+		$this->obj_table->add_column("standard", "server_name", "radius_servers.server_name");
+		$this->obj_table->add_column("standard", "log_type", "");
+		$this->obj_table->add_column("standard", "log_contents", "");
+
+		// defaults
+		$this->obj_table->columns		= array("timestamp", "server_name", "log_type", "log_contents");
+
+		$this->obj_table->sql_obj->prepare_sql_settable("logs");
+		$this->obj_table->sql_obj->prepare_sql_addjoin("LEFT JOIN radius_servers ON radius_servers.id = logs.id_server");
+		$this->obj_table->sql_obj->prepare_sql_addwhere("id_nas='". $this->obj_nas_device->id ."'");
+		$this->obj_table->sql_obj->prepare_sql_addorderby_desc("timestamp");
+
+		// acceptable filter options
+		$structure = NULL;
+		$structure["fieldname"] 	= "searchbox";
+		$structure["type"]		= "input";
+		$structure["sql"]		= "(server_name LIKE '%value%' OR log_type LIKE '%value%' OR log_contents LIKE '%value%')";
+		$this->obj_table->add_filter($structure);
+
+		$structure = NULL;
+		$structure["fieldname"] 	= "num_logs_rows";
+		$structure["type"]		= "input";
+		$structure["sql"]		= "";
+		$structure["defaultvalue"]	= "1000";
+		$this->obj_table->add_filter($structure);
+
+
+		// load options
+		$this->obj_table->add_fixed_option("id", $this->obj_nas_device->id);
+		$this->obj_table->load_options_form();
+
+
+		// generate SQL
+		$this->obj_table->generate_sql();
+
+		// load limit filter
+		$this->obj_table->sql_obj->string .= "LIMIT ". $this->obj_table->filter["filter_num_logs_rows"]["defaultvalue"];
+
+		// load data from DB
+		$this->obj_table->load_data_sql();
+
 	}
 
 
 	function render_html()
 	{
 		// title + summary
-		print "<h3>NAS DEVICES LOG</h3>";
-		print "<p>This feature has yet to be implemented.</p>";
+		print "<h3>NAS DEVICE</h3>";
+		print "<p>This page displays all log entries that were matched against the selected NAS device. This collection of logs might not be perfect, there could be some entries that haven't been displayed if phpfreeradius was unable to associate them with the device, in which case use the main logs page to view all logs.</p>";
+
+		// display options form
+		$this->obj_table->render_options_form();
+
+		// table data
+		if (!count($this->obj_table->columns))
+		{
+			format_msgbox("important", "<p>Please select some valid options to display.</p>");
+		}
+		elseif (!$this->obj_table->data_num_rows)
+		{
+			format_msgbox("info", "<p>No log records that match your options were found.</p>");
+		}
+		else
+		{
+
+			// display the table
+			$this->obj_table->render_table_html();
+
+		}
+
 	}
+
 
 }
 
