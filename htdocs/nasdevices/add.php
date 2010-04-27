@@ -72,6 +72,7 @@ class page_output
 		$structure["fieldname"] 	= "nas_secret";
 		$structure["type"]		= "input";
 		$structure["options"]["req"]	= "yes";
+		$structure["defaultvalue"]	= sql_get_singlevalue("SELECT value FROM config WHERE name='DEFAULT_NAS_PASSWORD' LIMIT 1");
 		$this->obj_form->add_input($structure);
 	
 		// ldap groups

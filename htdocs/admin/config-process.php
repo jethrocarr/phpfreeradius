@@ -19,6 +19,8 @@ if (user_permissions_get("radiusadmins"))
 
 
 	// fetch all the data
+	$data["DEFAULT_NAS_PASSWORD"]			= security_form_input_predefined("any", "DEFAULT_NAS_PASSWORD", 1, "");
+
 	$data["DATEFORMAT"]				= security_form_input_predefined("any", "DATEFORMAT", 1, "");
 	$data["TIMEZONE_DEFAULT"]			= security_form_input_predefined("any", "TIMEZONE_DEFAULT", 1, "");
 
