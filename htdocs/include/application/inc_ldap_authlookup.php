@@ -46,7 +46,8 @@ class ldap_auth_lookup
 	/*
 		list_groups
 
-		Fetches an array of all the available groups from the LDAP database and saves into $this->data
+		Fetches an array of all the available groups from the LDAP database and saves into $this->data. Note that this function
+		EXCLUDES any user-only groups and only shows created groups.
 	*/
 
 	function list_groups()
@@ -56,20 +57,39 @@ class ldap_auth_lookup
 		// clear data
 		$this->data = array();
 
+
+		// fetch the GID number for all users, so we can exclude user-only groups
+		$this->obj_ldap->srvcfg["base_dn"] = "ou=People,". $GLOBALS["config"]["ldap_dn"];
+
+		if ($this->obj_ldap->search("uid=*", array("gidnumber")))
+		{
+			// generate user list array
+			$user_gid_array	= array();
+
+			foreach ($this->obj_ldap->data as $data_ldap)
+			{
+				$user_gid_array[]	=  $data_ldap["gidnumber"][0];
+			}
+		}
+
+
 		// get a list of all the groups
 		$this->obj_ldap->srvcfg["base_dn"] = "ou=Group,". $GLOBALS["config"]["ldap_dn"];
 
-		if ($this->obj_ldap->search("cn=*", array("cn")))
+		if ($this->obj_ldap->search("cn=*", array("cn", "gidnumber")))
 		{
 			foreach ($this->obj_ldap->data as $data_group)
 			{
 				if ($data_group["cn"][0])
 				{
-					$this->data[] = $data_group["cn"][0];
+					if (!in_array($data_group["gidnumber"][0], $user_gid_array))
+					{
+						$this->data[] = $data_group["cn"][0];
+					}
 				}
 			}
-
 		}
+
 
 	} // end of list_groups
 	
