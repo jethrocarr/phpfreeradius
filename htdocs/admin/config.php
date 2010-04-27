@@ -87,7 +87,7 @@ class page_output
 		
 		// define subforms
 //		$this->obj_form->subforms["config_security"]		= array("BLACKLIST_ENABLE", "BLACKLIST_LIMIT");
-		$this->obj_form->subforms["config_naspassword"]		= array("DEFAULT_NAS_PASSWORD");
+		$this->obj_form->subforms["config_defaults"]		= array("DEFAULT_NAS_PASSWORD");
 		$this->obj_form->subforms["config_dateandtime"]		= array("DATEFORMAT", "TIMEZONE_DEFAULT");
 		$this->obj_form->subforms["submit"]			= array("submit");
 
