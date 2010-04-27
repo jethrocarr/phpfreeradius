@@ -457,7 +457,7 @@ function time_format_humandate($date = NULL)
 
 	if ($date)
 	{
-		if (is_int($date))
+		if (preg_match("/^[0-9]*$/", $date))
 		{
 			// already a timestamp, yay!
 			$timestamp = $date;
