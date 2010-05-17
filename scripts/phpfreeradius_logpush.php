@@ -29,14 +29,16 @@ require("include/amberphplib/main.php");
 if (!file_exists($GLOBALS["config"]["log_pipe"]))
 {
 	// create pipe for communicating log files from freeradius
-	if (!posix_mkfifo($GLOBALS["config"]["log_pipe"], "700"))
+	if (!posix_mkfifo($GLOBALS["config"]["log_pipe"], 0770))
 	{
 		log_write("error", "Unable to create named pipe file ". $GLOBALS["config"]["log_pipe"] ."");
 		die("Fatal Error");
 	}
 
 	// set ownership
+	chmod($GLOBALS["config"]["log_pipe"], 0770);
 	chown($GLOBALS["config"]["log_pipe"], $GLOBALS["config"]["log_user"]);
+	chgrp($GLOBALS["config"]["log_pipe"], $GLOBALS["config"]["log_user"]);
 }
 
 
