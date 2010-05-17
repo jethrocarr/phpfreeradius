@@ -280,9 +280,10 @@ foreach (array_keys($data_huntgroups) as $ldapgroup)
 fwrite($fh, "#\n");
 fwrite($fh, "# Authenticate Against LDAP\n");
 fwrite($fh, "#\n");
-fwrite($fh, "DEFAULT Auth-Type = LDAP\n");
-fwrite($fh, "\tFall-Through = 1\n");
+fwrite($fh, "DEFAULT Auth-Type := Reject\n");
+fwrite($fh, "\tReply-Message = \"Authentication denied - user does not belong to any suitable groups to access this NAS\"\n");
 fwrite($fh, "\n");
+
 
 fclose($fh);
 
