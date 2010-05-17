@@ -7,7 +7,7 @@
 #
 # This utility makes it easy to build packages from your unpacked source tree.
 #
-# It make a copy of the source, remove any CVS folders, rename it to the
+# It make a copy of the source, remove any SVN folders, rename it to the
 # desired version, rename .spec file to the desired version, then finally
 # it will tar & bzip it.
 #
@@ -44,17 +44,6 @@ my $name_base		= "phpfreeradius";
 my $name_withversion	= "phpfreeradius-$version";
 
 
-# update CVS tag?
-print "Would you like to CVS tag the current source with tag of \"v_$version\"? (y/n)\n";
-$input = get_question('^[y|n]$');
-
-if ($input eq "y")
-{
-	print "Please enter CVS module name:\n";
-	$input = get_question('^\S*$');
-	system("cvs rtag v_$version $input");
-}
-
 
 # make sure destination data does not exist.
 if (-e "/tmp/$name_withversion" || -e "/tmp/$name_withversion.tar.bz2")
@@ -78,8 +67,8 @@ system("cp -avr * /tmp/$name_withversion/");
 # we have finished with the orignal source
 chdir("/tmp");
 
-# remove CVS stuff
-system("find $name_withversion/* -type d | grep CVS | sed \"s/^/rm -rf /\" | sh");
+# remove SVN stuff
+system("find $name_withversion/* -type d | grep .svn | sed \"s/^/rm -rf /\" | sh");
 
 # remove a config file if one exists
 system("rm -f $name_withversion/htdocs/include/config-settings.php");

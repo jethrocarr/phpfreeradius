@@ -106,6 +106,7 @@ fi
 %post integration
 
 if [$1 == 0];
+then
 	# upgrading existing rpm
 	echo "Restarting logging process..."
 	/etc/init.d/phpfreeradiuslogging restart
