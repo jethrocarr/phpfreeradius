@@ -141,6 +141,8 @@ function security_form_input($expression, $valuename, $numchars, $errormsg)
 	* money		0.2f floating point money value - the security function will perform padding
 	* float		Floating point integer
 	* ipv4		XXX.XXX.XXX.XXX IPv4 syntax
+	* ipv4_cidr	XXX.XXX.XXX.XXX/XX IPv4 with CIDR notation
+	* dns_fqdn	Fully Qualified Domain Name
 	* checkbox	Checkbox - return 1 if set, 0 if not
 
 	For further details, refer to the commentsfor the security_form_input function.
@@ -339,6 +341,14 @@ function security_form_input_predefined ($type, $valuename, $numchar, $errormsg)
 
 		case "ipv4":
 			$expression = "/^(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:[.](?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}$/";
+		break;
+	
+		case "ipv4_cidr":
+			$expression = "/^(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:[.](?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}\/[0-9]*$/";
+		break;
+
+		case "dns_fqdn":
+			$expression = "/^[a-zA-Z][a-zA-Z0-9.-]*$/";
 		break;
 
 		case "checkbox":

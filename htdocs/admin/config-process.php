@@ -11,25 +11,65 @@
 // includes
 include_once("../include/config.php");
 include_once("../include/amberphplib/main.php");
+include_once("../include/application/main.php");
 
 
 if (user_permissions_get("radiusadmins"))
 {
-	////// INPUT PROCESSING ////////////////////////
+	/*
+		Fetch Data
+	*/
 
-
-	// fetch all the data
 	$data["DEFAULT_NAS_PASSWORD"]			= security_form_input_predefined("any", "DEFAULT_NAS_PASSWORD", 1, "");
+
+	$data["NAMEDMANAGER_FEATURE"]			= security_form_input_predefined("any", "NAMEDMANAGER_FEATURE", 1, "");
+
+	if ($data["NAMEDMANAGER_FEATURE"] == "enabled")
+	{
+		$data["NAMEDMANAGER_API_URL"]			= security_form_input_predefined("any", "NAMEDMANAGER_API_URL", 1, "");
+		$data["NAMEDMANAGER_API_KEY"]			= security_form_input_predefined("any", "NAMEDMANAGER_API_KEY", 1, "");
+		$data["NAMEDMANAGER_DEFAULT_A"]			= security_form_input_predefined("checkbox", "NAMEDMANAGER_DEFAULT_A", 0, "");
+		$data["NAMEDMANAGER_DEFAULT_PTR"]		= security_form_input_predefined("checkbox", "NAMEDMANAGER_DEFAULT_PTR", 0, "");
+	}
 
 	$data["DATEFORMAT"]				= security_form_input_predefined("any", "DATEFORMAT", 1, "");
 	$data["TIMEZONE_DEFAULT"]			= security_form_input_predefined("any", "TIMEZONE_DEFAULT", 1, "");
 
 
+	
+	/*
+		Error Processing
+	*/
 
-	//// PROCESS DATA ////////////////////////////
 
 
-	if ($_SESSION["error"]["message"])
+	// connect to the API to verify valid information
+	if ($data["NAMEDMANAGER_FEATURE"] == "enabled" && $data["NAMEDMANAGER_API_URL"] && $data["NAMEDMANAGER_API_KEY"])
+	{
+		log_write("debug", "process", "Attempting to connect to the NamedManager API on ". $data["NAMEDMANAGER_API_URL"] ."");
+
+
+		$obj_named		= New namedmanager;
+
+		$obj_named->api_url	= $data["NAMEDMANAGER_API_URL"];
+		$obj_named->api_key	= $data["NAMEDMANAGER_API_KEY"];
+
+		if ($obj_named->authenticate())
+		{
+			log_write("notification", "process", "Test authentication to Named Manager completed successfully");
+		}
+		else
+		{
+			log_write("error", "process", "An error occured whilst attempting to initiate a test connection to NamedManager application");
+
+			error_flag_field("NAMEDMANAGER_API_URL");
+			error_flag_field("NAMEDMANAGER_API_KEY");
+		}
+	}
+
+
+
+	if (error_check())
 	{
 		$_SESSION["error"]["form"]["config"] = "failed";
 		header("Location: ../index.php?page=admin/config.php");
@@ -37,6 +77,11 @@ if (user_permissions_get("radiusadmins"))
 	}
 	else
 	{
+		/*
+			Apply Changes
+		*/
+
+		
 		$_SESSION["error"] = array();
 
 		/*

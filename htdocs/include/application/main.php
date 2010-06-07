@@ -17,5 +17,7 @@ require("inc_ldap_authlookup.php");
 require("inc_servers.php");
 require("inc_radius_logs.php");
 
+// include addon modules
+require("inc_namedmanager.php");
 
 ?>

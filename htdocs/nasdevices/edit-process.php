@@ -37,17 +37,49 @@ if (user_permissions_get('radiusadmins'))
 			// load existing data
 			$obj_nas_device->load_data();
 		}
+
 	}
 
 	// basic fields
 	$obj_nas_device->data["nas_hostname"]			= security_form_input_predefined("any", "nas_hostname", 1, "");
-	$obj_nas_device->data["nas_address"]			= security_form_input_predefined("any", "nas_address", 1, "");
 	$obj_nas_device->data["nas_type"]			= security_form_input_predefined("int", "nas_type", 1, "");
 	$obj_nas_device->data["nas_description"]		= security_form_input_predefined("any", "nas_description", 0, "");
 	$obj_nas_device->data["nas_secret"]			= security_form_input_predefined("any", "nas_secret", 1, "");
 	$obj_nas_device->data["nas_ldapgroup"]			= security_form_input_predefined("any", "nas_ldapgroup", 1, "");
 
 
+	// address field
+	$obj_nas_device->data["nas_address_type"]		= security_form_input_predefined("any", "nas_address_type", 1, "");
+
+	switch ($obj_nas_device->data["nas_address_type"])
+	{
+		case "ipv4_single":
+			$obj_nas_device->data["nas_address"]	= security_form_input_predefined("ipv4", "nas_address_ipv4", 1, "");
+		break;
+
+		case "ipv4_range":
+			$obj_nas_device->data["nas_address"]	= security_form_input_predefined("ipv4_cidr", "nas_address_ipv4_range", 1, "");
+		break;
+
+		case "hostname":
+			$obj_nas_device->data["nas_address"]	= security_form_input_predefined("dns_fqdn", "nas_address_ipv4_host", 1, "");
+		break;
+
+		default:
+			log_write("error", "process", "Invalid address type supplied, this is most likely an application bug.");
+
+			error_flag_field("nas_address_type");
+		break;
+	}
+
+
+	// DNS data
+	if ($obj_nas_device->data["nas_address_type"] == "ipv4_single")
+	{
+		$obj_nas_device->data["nas_dns_record_a"]			= security_form_input_predefined("any", "nas_dns_record_a", 0, "");
+		$obj_nas_device->data["nas_dns_record_ptr"]			= security_form_input_predefined("any", "nas_dns_record_ptr", 0, "");
+		$obj_nas_device->data["nas_dns_record_ptr_altip"]		= security_form_input_predefined("ipv4", "nas_dns_record_ptr_altip", 0, "");
+	}
 
 
 	/*
@@ -66,8 +98,21 @@ if (user_permissions_get('radiusadmins'))
 	if (!$obj_nas_device->verify_nas_address())
 	{
 		log_write("error", "process", "The requested address is already in use by another NAS, perhaps you are trying to add a NAS that has already been configured?");
+		
+		switch ($obj_nas_device->data["nas_address_type"])
+		{
+			case "ipv4_single":
+				error_flag_field("nas_address_ipv4");
+			break;
 
-		error_flag_field("nas_address");
+			case "ipv4_range":
+				error_flag_field("nas_address_ipv4_range");
+			break;
+
+			case "hostname":
+				error_flag_field("nas_address_host");
+			break;
+		}
 	}
 
 
@@ -78,36 +123,6 @@ if (user_permissions_get('radiusadmins'))
 
 		error_flag_field("nas_ldapgroup");
 	}
-
-
-	// check the address format - can be one of three types:
-	//	- single IP
-	//	- subnet with CIDR notation
-	//	- hostname
-
-	$expressions	= array();
-	$expressions[]	= "/^(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:[.](?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}$/";			// single IP
-	$expressions[]	= "/^(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:[.](?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}\/[0-9]*$/";		// CIDR notation subnet
-	$expressions[]	= "/^[a-zA-Z][a-zA-Z0-9.-]*$/";											// hostname
-
-	$match		= 0;
-
-	foreach ($expressions as $regex)
-	{
-		if (preg_match($regex, $obj_nas_device->data["nas_address"]))
-		{
-			$match = 1;
-		}
-	}
-
-	if (!$match)
-	{
-		// address did not match any known format
-		log_write("error", "process", "The supplied address is invalid - either a single IP (127.0.0.1), subnet (192.168.0.0/24) or hostname (host1.example.com) must be supplied as an address");
-
-		error_flag_field("nas_address");
-	}
-
 
 
 	/*
@@ -131,8 +146,6 @@ if (user_permissions_get('radiusadmins'))
 	}
 	else
 	{
-		// clear error data
-		error_clear();
 
 
 		/*
@@ -140,6 +153,25 @@ if (user_permissions_get('radiusadmins'))
 		*/
 
 		$obj_nas_device->action_update();
+		$obj_nas_device->action_update_namedmanager();
+
+
+
+		/*
+			We wouldn't normally check here, but if anything goes wrong with the API, it's best
+			to be able to handle it gracefully
+		*/
+
+		if (error_check())
+		{
+			$_SESSION["error"]["form"]["nas_device_edit"]	= "failed";
+			header("Location: ../index.php?page=nasdevices/view.php&id=". $obj_nas_device->id ."");
+			exit(0);
+		}
+		
+
+		// clear error data
+		error_clear();
 
 
 		/*

@@ -77,6 +77,56 @@ class page_output
 		$this->obj_form->add_input($structure);
 
 
+
+		// namedmanager options
+		$structure = NULL;
+		$structure["fieldname"]				= "NAMEDMANAGER_FEATURE";
+		$structure["type"]				= "radio";
+		$structure["values"]				= array("enabled", "disabled");
+		$structure["options"]["no_translate_fieldname"]	= "yes";
+		$structure["defaultvalue"]			= "disabled";
+		$this->obj_form->add_input($structure);
+
+		$structure = NULL;
+		$structure["fieldname"]				= "NAMEDMANAGER_API_URL";
+		$structure["type"]				= "input";
+		$structure["options"]["label"]			= " ". lang_trans("help_namedmanager_api_url");
+		$structure["options"]["no_translate_fieldname"]	= "yes";
+		$this->obj_form->add_input($structure);
+
+		$structure = NULL;
+		$structure["fieldname"]				= "NAMEDMANAGER_API_KEY";
+		$structure["type"]				= "input";
+		$structure["options"]["label"]			= " ". lang_trans("help_namedmanager_api_key");
+		$structure["options"]["no_translate_fieldname"]	= "yes";
+		$this->obj_form->add_input($structure);
+		
+		$structure = NULL;
+		$structure["fieldname"]				= "NAMEDMANAGER_DEFAULT_A";
+		$structure["type"]				= "checkbox";
+		$structure["options"]["label"]			= " ". lang_trans("help_namedmanager_default_a");
+		$structure["options"]["no_translate_fieldname"]	= "yes";
+		$this->obj_form->add_input($structure);
+
+		$structure = NULL;
+		$structure["fieldname"]				= "NAMEDMANAGER_DEFAULT_PTR";
+		$structure["type"]				= "checkbox";
+		$structure["options"]["label"]			= " ". lang_trans("help_namedmanager_default_ptr");
+		$structure["options"]["no_translate_fieldname"]	= "yes";
+		$this->obj_form->add_input($structure);
+
+
+		$this->obj_form->add_action("NAMEDMANAGER_FEATURE", "disabled", "NAMEDMANAGER_API_URL", "hide");
+		$this->obj_form->add_action("NAMEDMANAGER_FEATURE", "disabled", "NAMEDMANAGER_API_KEY", "hide");
+		$this->obj_form->add_action("NAMEDMANAGER_FEATURE", "disabled", "NAMEDMANAGER_DEFAULT_A", "hide");
+		$this->obj_form->add_action("NAMEDMANAGER_FEATURE", "disabled", "NAMEDMANAGER_DEFAULT_PTR", "hide");
+
+		$this->obj_form->add_action("NAMEDMANAGER_FEATURE", "enabled", "NAMEDMANAGER_API_URL", "show");
+		$this->obj_form->add_action("NAMEDMANAGER_FEATURE", "enabled", "NAMEDMANAGER_API_KEY", "show");
+		$this->obj_form->add_action("NAMEDMANAGER_FEATURE", "enabled", "NAMEDMANAGER_DEFAULT_A", "show");
+		$this->obj_form->add_action("NAMEDMANAGER_FEATURE", "enabled", "NAMEDMANAGER_DEFAULT_PTR", "show");
+		
+
 		// submit section
 		$structure = NULL;
 		$structure["fieldname"]				= "submit";
@@ -89,9 +139,10 @@ class page_output
 //		$this->obj_form->subforms["config_security"]		= array("BLACKLIST_ENABLE", "BLACKLIST_LIMIT");
 		$this->obj_form->subforms["config_defaults"]		= array("DEFAULT_NAS_PASSWORD");
 		$this->obj_form->subforms["config_dateandtime"]		= array("DATEFORMAT", "TIMEZONE_DEFAULT");
+		$this->obj_form->subforms["config_namedmanager"]	= array("NAMEDMANAGER_FEATURE", "NAMEDMANAGER_API_URL", "NAMEDMANAGER_API_KEY", "NAMEDMANAGER_DEFAULT_A", "NAMEDMANAGER_DEFAULT_PTR");
 		$this->obj_form->subforms["submit"]			= array("submit");
 
-		if ($_SESSION["error"]["message"])
+		if (error_check())
 		{
 			// load error datas
 			$this->obj_form->load_data_error();
