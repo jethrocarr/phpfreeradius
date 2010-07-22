@@ -24,10 +24,11 @@ $config["ldap_groupdn"]		= "ou=Group,ou=auth,dc=example,dc=com";
 
 
 /*
-	Log Pipe File
+	Log File Location
+
+	(must be readable by the user running the phpfreeradius_logpush script)
 */
-$config["log_pipe"]		= "/var/run/phpfreeradius_log";
-$config["log_owner"]		= "radiusd";
+$config["log_file"]		= "/var/log/radius";
 
 
 
