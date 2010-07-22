@@ -146,7 +146,7 @@ class page_output
 
 
 		// DNS
-		if ($GLOBALS["config"]["NAMEDMANAGER_FEATURE"])
+		if ($GLOBALS["config"]["NAMEDMANAGER_FEATURE"] == "enabled")
 		{
 			$structure = NULL;
 			$structure["fieldname"]			= "nas_dns_record_na";
@@ -223,7 +223,7 @@ class page_output
 		// define subforms
 		$this->obj_form->subforms["nas_details"]	= array("nas_hostname", "nas_address_type", "nas_address_ipv4", "nas_address_host", "nas_address_ipv4_range", "nas_type", "nas_description");
 
-		if ($GLOBALS["config"]["NAMEDMANAGER_FEATURE"])
+		if ($GLOBALS["config"]["NAMEDMANAGER_FEATURE"] == "enabled")
 		{
 			$this->obj_form->subforms["nas_dns"]	= array("nas_dns_record_na", "nas_dns_record_a", "nas_dns_record_ptr", "nas_dns_record_ptr_altip");
 		}
