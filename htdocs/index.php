@@ -74,6 +74,22 @@ else
 	}
 	else
         {
+		/*
+			Load the page
+		*/
+
+		log_debug("index", "Loading page $page");
+
+
+		// include PHP code
+		include($page);
+
+
+		// create new page object
+		$page_obj = New page_output;
+
+
+		// page is valid
 		$page_valid = 1;
 	}
 }
@@ -188,14 +204,6 @@ if ($page_valid == 1 && user_online())
 if ($page_valid == 1)
 {
 	log_debug("index", "Loading page $page");
-
-
-	// include PHP code
-	include($page);
-
-
-	// create new page object
-	$page_obj = New page_output;
 
 	// check permissions
 	if ($page_obj->check_permissions())

@@ -125,13 +125,22 @@ class page_output
 		$this->obj_form->add_action("NAMEDMANAGER_FEATURE", "enabled", "NAMEDMANAGER_API_KEY", "show");
 		$this->obj_form->add_action("NAMEDMANAGER_FEATURE", "enabled", "NAMEDMANAGER_DEFAULT_A", "show");
 		$this->obj_form->add_action("NAMEDMANAGER_FEATURE", "enabled", "NAMEDMANAGER_DEFAULT_PTR", "show");
-		
+
+
+		// miscellaneous configurations
+		$structure = NULL;
+		$structure["fieldname"]					= "LOG_UPDATE_INTERVAL";
+		$structure["type"]					= "input";
+		$structure["options"]["no_translate_fieldname"]		= "yes";
+		$structure["options"]["label"]				= " seconds";
+		$this->obj_form->add_input($structure);
+
 
 		// submit section
 		$structure = NULL;
-		$structure["fieldname"]				= "submit";
-		$structure["type"]				= "submit";
-		$structure["defaultvalue"]			= "Save Changes";
+		$structure["fieldname"]					= "submit";
+		$structure["type"]					= "submit";
+		$structure["defaultvalue"]				= "Save Changes";
 		$this->obj_form->add_input($structure);
 		
 		
@@ -140,6 +149,7 @@ class page_output
 		$this->obj_form->subforms["config_defaults"]		= array("DEFAULT_NAS_PASSWORD");
 		$this->obj_form->subforms["config_dateandtime"]		= array("DATEFORMAT", "TIMEZONE_DEFAULT");
 		$this->obj_form->subforms["config_namedmanager"]	= array("NAMEDMANAGER_FEATURE", "NAMEDMANAGER_API_URL", "NAMEDMANAGER_API_KEY", "NAMEDMANAGER_DEFAULT_A", "NAMEDMANAGER_DEFAULT_PTR");
+		$this->obj_form->subforms["config_miscellaneous"]	= array("LOG_UPDATE_INTERVAL");
 		$this->obj_form->subforms["submit"]			= array("submit");
 
 		if (error_check())
