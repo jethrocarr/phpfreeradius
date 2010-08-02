@@ -148,16 +148,27 @@ foreach ($data_nas as $nas)
 {
 	fwrite($fh, "# ". $nas["nas_hostname"] ."\n");
 
+	// check shortname
+	if ($nas["nas_shortname"] == "")
+	{
+		// the shortname feature was introduced at a later stage, not all hosts will
+		// have a shortname - if they don't, it doesn't matter, just means we need to
+		// go and set the shortname to the same as the hostname
+		$nas["nas_shortname"] = $nas["nas_hostname"];
+	}
+
+
 	// make sure we don't break on description newlines
 	$nas["nas_description"] = preg_replace("/\r/", "", $nas["nas_description"]);
 	$nas["nas_description"] = preg_replace("/\n/", "\n# ", $nas["nas_description"]);
 
 	fwrite($fh, "# ". $nas["nas_description"] ."\n");
 
+	// general host settings
 	fwrite($fh, "#\n");
 	fwrite($fh, "client ". $nas["nas_address"] ." {\n");	
 	fwrite($fh, "\tsecret = ". $nas["nas_secret"] ."\n");
-	fwrite($fh, "\tshortname = ". $nas["nas_hostname"] ."\n");
+	fwrite($fh, "\tshortname = ". $nas["nas_shortname"] ."\n");
 	fwrite($fh, "\tnastype = ". $nas["nas_type"] ."\n");
 	fwrite($fh, "}\n");
 	fwrite($fh, "\n");
