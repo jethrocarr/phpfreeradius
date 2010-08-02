@@ -626,3 +626,10 @@ div[class*='toggle']
 	background-color:	#c3e5f1;
 }
 
+
+/* help messages */
+.helpmessage
+{
+	color:	#ABABAB;
+}
+

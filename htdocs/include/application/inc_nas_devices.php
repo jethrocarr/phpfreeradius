@@ -122,6 +122,54 @@ class nas_device
 
 
 
+	/*
+		verify_nas_shortname
+
+		Verify that the nas_shortname value supplied has not already been taken.
+
+		Results
+		-1	Failure - name is too long
+		0	Failure - name in use
+		1	Success - name is available
+	*/
+
+	function verify_nas_shortname()
+	{
+		log_debug("nas_devices", "Executing verify_nas_shortname()");
+
+
+		// check shortname
+		$sql_obj			= New sql_query;
+		$sql_obj->string		= "SELECT id FROM `nas_devices` WHERE nas_shortname='". $this->data["nas_shortname"] ."' ";
+
+		if ($this->id)
+			$sql_obj->string	.= " AND id!='". $this->id ."'";
+
+		$sql_obj->string		.= " LIMIT 1";
+		$sql_obj->execute();
+
+		if ($sql_obj->num_rows())
+		{
+			log_write("debug", "nas_devices", "Shortname is already inuse!");
+
+			return 0;
+		}
+
+
+		// check length
+		if (count($this->data["nas_shortname"]) > 30)
+		{
+			log_write("debug", "nas_devices", "Shortname is too long");
+
+			return -1;
+		}
+		
+		return 1;
+
+	} // end of verify_nas_shortname
+
+
+
 
 	/*
 		verify_nas_ldapgroup
@@ -151,7 +199,6 @@ class nas_device
 
 
 
-
 	/*
 		load_data
 
@@ -174,6 +221,15 @@ class nas_device
 			$sql_obj->fetch_array();
 
 			$this->data = $sql_obj->data[0];
+
+
+			// not all hosts will have a shortname if they were added before version
+			// 1.1.0, if they don't, then set the shortname to the hostname
+
+			if (!$this->data["nas_shortname"])
+			{
+				$this->data["nas_shortname"] = $this->data["nas_hostname"];
+			}
 
 			return 1;
 		}
@@ -260,6 +316,7 @@ class nas_device
 
 		$sql_obj->string	= "UPDATE `nas_devices` SET "
 						."nas_hostname='". $this->data["nas_hostname"] ."', "
+						."nas_shortname='". $this->data["nas_shortname"] ."', "
 						."nas_address='". $this->data["nas_address"] ."', "
 						."nas_secret='". $this->data["nas_secret"] ."', "
 						."nas_type='". $this->data["nas_type"] ."', "

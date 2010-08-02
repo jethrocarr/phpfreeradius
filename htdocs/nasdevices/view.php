@@ -70,11 +70,22 @@ class page_output
 
 		// general
 		$structure = NULL;
-		$structure["fieldname"] 	= "nas_hostname";
-		$structure["type"]		= "input";
-		$structure["options"]["req"]	= "yes";
-		$structure["options"]["label"]	= " ". lang_trans("help_nas_hostname");
+		$structure["fieldname"] 		= "nas_hostname";
+		$structure["type"]			= "input";
+		$structure["options"]["req"]		= "yes";
+		$structure["options"]["label"]		= " ". lang_trans("help_nas_hostname");
 		$this->obj_form->add_input($structure);
+		
+		$structure = NULL;
+		$structure["fieldname"] 		= "nas_shortname";
+		$structure["type"]			= "input";
+		$structure["options"]["req"]		= "yes";
+		$structure["options"]["max_length"]	= 30;
+		//$structure["options"]["width"]		= 250;
+		$structure["options"]["help"]		= lang_trans("help_nas_shortname_inline");
+		$structure["options"]["label"]		= " ". lang_trans("help_nas_shortname");
+		$this->obj_form->add_input($structure);
+
 
 		$structure = NULL;
 		$structure["fieldname"] 	= "nas_address_type";
@@ -221,7 +232,7 @@ class page_output
 		
 		
 		// define subforms
-		$this->obj_form->subforms["nas_details"]	= array("nas_hostname", "nas_address_type", "nas_address_ipv4", "nas_address_host", "nas_address_ipv4_range", "nas_type", "nas_description");
+		$this->obj_form->subforms["nas_details"]	= array("nas_hostname", "nas_shortname", "nas_address_type", "nas_address_ipv4", "nas_address_host", "nas_address_ipv4_range", "nas_type", "nas_description");
 
 		if ($GLOBALS["config"]["NAMEDMANAGER_FEATURE"] == "enabled")
 		{
@@ -244,6 +255,7 @@ class page_output
 			{
 				// load general data
 				$this->obj_form->structure["nas_hostname"]["defaultvalue"]			= $this->obj_nas_device->data["nas_hostname"];
+				$this->obj_form->structure["nas_shortname"]["defaultvalue"]			= $this->obj_nas_device->data["nas_shortname"];
 				$this->obj_form->structure["nas_type"]["defaultvalue"]				= $this->obj_nas_device->data["nas_type"];
 				$this->obj_form->structure["nas_description"]["defaultvalue"]			= $this->obj_nas_device->data["nas_description"];
 				$this->obj_form->structure["nas_secret"]["defaultvalue"]			= $this->obj_nas_device->data["nas_secret"];

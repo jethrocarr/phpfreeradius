@@ -41,7 +41,7 @@ class radius_logs
 
 		// see if this log entry is related to any particular NAS
 		$sql_obj		= New sql_query;
-		$sql_obj->string	= "SELECT id, nas_hostname FROM nas_devices";
+		$sql_obj->string	= "SELECT id, nas_hostname, nas_shortname FROM nas_devices";
 		$sql_obj->execute();
 
 		if ($sql_obj->num_rows())
@@ -52,6 +52,13 @@ class radius_logs
 			{
 				if (preg_match("/". $data["nas_hostname"] ."/i", $log_contents))
 				{
+					$this->id_nas	= $data["id"];
+				}
+				elseif (preg_match("/". $data["nas_shortname"] ."/i", $log_contents))
+				{
+					// replace the shortname with the hostname for user clarity
+					$log_contents	= str_replace($data["nas_shortname"], $data["nas_hostname"], $log_contents);
+
 					$this->id_nas	= $data["id"];
 				}
 			}

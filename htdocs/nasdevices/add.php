@@ -50,6 +50,17 @@ class page_output
 		$this->obj_form->add_input($structure);
 
 		$structure = NULL;
+		$structure["fieldname"] 		= "nas_shortname";
+		$structure["type"]			= "input";
+		$structure["options"]["req"]		= "yes";
+		$structure["options"]["max_length"]	= 30;
+		//$structure["options"]["width"]	= 250;
+		$structure["options"]["help"]		= lang_trans("help_nas_shortname_inline");
+		$structure["options"]["label"]		= " ". lang_trans("help_nas_shortname");
+		$this->obj_form->add_input($structure);
+
+
+		$structure = NULL;
 		$structure["fieldname"] 	= "nas_address_type";
 		$structure["type"]		= "radio";
 		$structure["values"]		= array("ipv4_single", "ipv4_range", "hostname");
@@ -197,7 +208,7 @@ class page_output
 		
 		
 		// define subforms
-		$this->obj_form->subforms["nas_details"]	= array("nas_hostname", "nas_address_type", "nas_address_ipv4", "nas_address_host", "nas_address_ipv4_range", "nas_type", "nas_description");
+		$this->obj_form->subforms["nas_details"]	= array("nas_hostname", "nas_shortname", "nas_address_type", "nas_address_ipv4", "nas_address_host", "nas_address_ipv4_range", "nas_type", "nas_description");
 
 		if ($GLOBALS["config"]["NAMEDMANAGER_FEATURE"] == "enabled")
 		{

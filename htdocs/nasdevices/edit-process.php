@@ -42,10 +42,22 @@ if (user_permissions_get('radiusadmins'))
 
 	// basic fields
 	$obj_nas_device->data["nas_hostname"]			= security_form_input_predefined("any", "nas_hostname", 1, "");
+	$obj_nas_device->data["nas_shortname"]			= security_form_input_predefined("any", "nas_shortname", 0, "");
 	$obj_nas_device->data["nas_type"]			= security_form_input_predefined("int", "nas_type", 1, "");
 	$obj_nas_device->data["nas_description"]		= security_form_input_predefined("any", "nas_description", 0, "");
 	$obj_nas_device->data["nas_secret"]			= security_form_input_predefined("any", "nas_secret", 1, "");
 	$obj_nas_device->data["nas_ldapgroup"]			= security_form_input_predefined("any", "nas_ldapgroup", 1, "");
+
+
+	// shortname
+	if (empty($obj_nas_device->data["nas_shortname"]))
+	{
+		// auto-generate by taking the host portion of the name
+
+		$tmp = explode(".", $obj_nas_device->data["nas_hostname"]);
+
+		$obj_nas_device->data["nas_shortname"] = $tmp["0"];
+	}
 
 
 	// address field
@@ -113,6 +125,15 @@ if (user_permissions_get('radiusadmins'))
 				error_flag_field("nas_address_host");
 			break;
 		}
+	}
+
+
+	// ensure that the shortname is valid
+	if (!$obj_nas_device->verify_nas_shortname())
+	{
+		log_write("error", "process", "The requested shortname is already in use by another host");
+
+		error_flag_field("nas_shortname");
 	}
 
 

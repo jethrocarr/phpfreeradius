@@ -23,6 +23,7 @@
 			<complexType name="fetch_nas_config_row">
 				<all>
 					<element name="nas_hostname" type="xsd:string"/>
+					<element name="nas_shortname" type="xsd:string"/>
 					<element name="nas_address" type="xsd:string"/>
 					<element name="nas_secret" type="xsd:string"/>
 					<element name="nas_type" type="xsd:string"/>
