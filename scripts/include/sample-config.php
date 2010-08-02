@@ -41,7 +41,8 @@ $config["freeradius_file_clients"]	= "/etc/raddb/clients.conf";	// clients/NAS c
 $config["freeradius_file_huntgroups"]	= "/etc/raddb/huntgroups";	// huntgroups
 $config["freeradius_file_users"]	= "/etc/raddb/users";		// users
 $config["freeradius_reload"]		= "/etc/init.d/radiusd reload";	// command to reload radius configuration
-
+$config["freeradius_status"]		= "/etc/init.d/radiusd status";	// command to report process status
+$config["freeradius_test"]		= "/usr/sbin/radiusd -XC";	// command to test radius configuration (FR 2.x.x only)
 
 
 

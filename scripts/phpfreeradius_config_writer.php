@@ -289,6 +289,52 @@ fclose($fh);
 
 
 
+/*
+	Test FreeRadius configuration
+
+	This is currently only supported in version 2.x.x and later. FreeRadius 1 did ship
+	with a tool for checking, but this tool has been found to be broken on some distributions.
+*/
+
+if ($config["freeradius_format"] == "1")
+{
+	log_write("debug", "script", "Unable to test FreeRadius configuration, version 1 does not support this ability");
+}
+else
+{
+	/*
+		Run Tests
+	*/
+	log_write("debug", "script", "Testing new FreeRadius configuration using ". $config["freeradius_test"] ."");
+
+	exec($config["freeradius_test"], $exec_output, $exec_return_value);
+
+	if ($exec_return_value)
+	{
+		// an error occured
+		log_write("error", "script", "An error occured whilst testing new FreeRadius configuration! No reload will take place");
+
+
+		// push error up via logs
+		try
+		{
+			$client->log_write(time(), "FATAL", "FREERADIUS CONFIGURATION INVALID, NOT RELOADING.");
+			$client->log_write(time(), "FATAL", "Execute ". $config["freeradius_test"] ." for more details and report to engineering");
+		}
+		catch (SoapFault $exception)
+		{
+			log_write("error", "script", "An unknown error (". $exception->getMessage() .") occured whilst pushing log messages up to FreeRadius");
+		}
+
+		die("Fatal Error");
+	}
+	else
+	{
+		// success!
+		log_write("debug", "script", "FreeRadius configuration tested successfully!");
+	}
+}
+
 
 /*
 	Reload FreeRadius
@@ -300,18 +346,58 @@ exec($config["freeradius_reload"], $exec_output, $exec_return_value);
 
 if ($exec_return_value)
 {
-	// an error occured
+	//
+	// Note: This reload command often seems to return successful even when there is a failure, don't rely
+	// on this, instead the checks of the configuration before and of the process afterwards are the best
+	// way to verify that things are working.
+	//
+
 	log_write("error", "script", "Unable to confirm successful reload of FreeRadius, potentially a configuration generation problem");
+}
+
+
+
+/*
+	Verify that FreeRadius is running
+*/
+
+log_write("debug", "script", "Verifing radiusd process is running...");
+
+
+exec($config["freeradius_status"], $exec_output, $exec_return_value);
+
+if ($exec_return_value)
+{
+	// failure!
+	log_write("error", "script", "Process NOT FOUND, FreeRadius process appears not to be running!");
+
+
+	// push error up via logs
+	try
+	{
+		$client->log_write(time(), "FATAL", "FREERADIUS PROCESS MISSING");
+		$client->log_write(time(), "FATAL", "Execute ". $config["freeradius_status"] ." on server to verify!");
+	}
+	catch (SoapFault $exception)
+	{
+		log_write("error", "script", "An unknown error (". $exception->getMessage() .") occured whilst pushing log messages up to FreeRadius");
+	}
+
+
+	// terminate
+	die("Fatal Error");
 }
 else
 {
 	// Success!
-	log_write("debug", "script", "FreeRadius successfully reloaded with new configuration");
+	log_write("debug", "script", "Process OK, FreeRadius successfully reloaded with new configuration");
 }
 
 
+
+
 /*
-	Confim Success
+	Report Success
 */
 
 try
