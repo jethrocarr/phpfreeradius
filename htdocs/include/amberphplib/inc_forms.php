@@ -463,6 +463,8 @@ class form_input
  						["css_row_class"]		Set the CSS class to a custom option for the rendered table row.
  						["css_row_id"]			Set the CSS id to a custom option for the rendered table row.
 											(note: by default, table rows have their ID set to the name of the fieldname)
+						["help"]			In-field help message for input and textarea types. Is ignored if defaultvalue is set.
+						["disabled"]			Disables the field if set to yes
 
 			$option_array["values"] = array();			Array of values - used for radio or dropdown type fields
 			$option_array["translations"] = array();		Associate array used for labeling the values in radio or dropdown type fields
@@ -471,6 +473,8 @@ class form_input
 	function render_field ($fieldname)
 	{
 		log_debug("form", "Executing render_field($fieldname)");
+		
+		$helpmessagestatus = "false";
 		
 		switch ($this->structure[$fieldname]["type"])
 		{
@@ -489,13 +493,24 @@ class form_input
 
 				// display
 				print "<input name=\"$fieldname\" ";
+				
 				if (isset($this->structure[$fieldname]["defaultvalue"]))
 				{
 					print "value=\"". $this->structure[$fieldname]["defaultvalue"] ."\" ";
 				}
+				elseif (isset($this->structure[$fieldname]["options"]["help"]))
+				{
+					print "class=\"helpmessage\" ";
+					print "value=\"". $this->structure[$fieldname]["options"]["help"] ."\" ";
+					$helpmessagestatus = "true";
+				}
+
 
 				if (isset($this->structure[$fieldname]["options"]["max_length"]))
 					print "maxlength=\"". $this->structure[$fieldname]["options"]["max_length"] ."\" ";
+					
+				if ($this->structure[$fieldname]["options"]["disabled"] == "yes")
+					print "disabled=\"disabled\" ";
 				
 				print "style=\"width: ". $this->structure[$fieldname]["options"]["width"] ."px;\">";
 
@@ -505,6 +520,7 @@ class form_input
 					print $this->structure[$fieldname]["options"]["label"];
 				}
 
+				print "<input type=\"hidden\" name=\"".$fieldname."_helpmessagestatus\" value=\"".$helpmessagestatus."\">";
 			break;
 
 
@@ -538,12 +554,20 @@ class form_input
 				{
 					print "value=\"". $this->structure[$fieldname]["defaultvalue"] ."\" ";
 				}
+				elseif (isset($this->structure[$fieldname]["options"]["help"]))
+				{
+					print "class=\"helpmessage\" ";
+					print "value=\"". $this->structure[$fieldname]["options"]["help"] ."\" ";
+					$helpmessagestatus = "true";
+				}
 
 				if (isset($this->structure[$fieldname]["options"]["max_length"]))
 					print "maxlength=\"". $this->structure[$fieldname]["options"]["max_length"] ."\" ";
+					
+				if ($this->structure[$fieldname]["options"]["disabled"] == "yes")
+					print "disabled=\"disabled\" ";
 				
 				print "style=\"width: ". $this->structure[$fieldname]["options"]["width"] ."px;\">";
-
 
 				if ($position == "after")
 				{
@@ -557,6 +581,8 @@ class form_input
 				{
 					print $this->structure[$fieldname]["options"]["label"];
 				}
+				
+				print "<input type=\"hidden\" name=\"".$fieldname."_helpmessagestatus\" value=\"".$helpmessagestatus."\">";
 			break;
 
 
@@ -574,14 +600,17 @@ class form_input
 					$this->structure[$fieldname]["options"]["width"] = 250;
 		
 				// display
-				print "<input type=\"password\" name=\"$fieldname\" value=\"";
+				print "<input type=\"password\" name=\"$fieldname\" ";
 
 				if (isset($this->structure[$fieldname]["defaultvalue"]))
 				{
-					print $this->structure[$fieldname]["defaultvalue"];
+					print "value=\"". $this->structure[$fieldname]["defaultvalue"] ."\" ";
 				}
+				
+				if ($this->structure[$fieldname]["options"]["disabled"] == "yes")
+					print "disabled=\"disabled\" ";
 
-				print "\" style=\"width: ". $this->structure[$fieldname]["options"]["width"] ."px;\">";
+				print " style=\"width: ". $this->structure[$fieldname]["options"]["width"] ."px;\">";
 
 				// optional label/description
 				if (isset($this->structure[$fieldname]["options"]["label"]))
@@ -628,13 +657,27 @@ class form_input
 				{
 					print "wrap=\"". $this->structure[$fieldname]["options"]["wrap"] ."\" ";
 				}
+				
+				if ($this->structure[$fieldname]["options"]["disabled"] == "yes")
+					print "disabled=\"disabled\" ";
 
-				print "style=\"width: ". $this->structure[$fieldname]["options"]["width"] ."px; height: ". $this->structure[$fieldname]["options"]["height"] ."px;\">";
+				print "style=\"width: ". $this->structure[$fieldname]["options"]["width"] ."px; height: ". $this->structure[$fieldname]["options"]["height"] ."px;\"";
+				
+//				if (isset($this->structure[$fieldname]["options"]["help"]) && !isset($this->structure[$fieldname]["defaultvalue"]))
+//				{
+//					print "class= \"helpmessage\" ";
+//				}
+				
+				print ">";
 
 				if (isset($this->structure[$fieldname]["defaultvalue"]))
 				{
 					print $this->structure[$fieldname]["defaultvalue"];
 				}
+//				elseif (isset($this->structure[$fieldname]["options"]["help"]))
+//				{
+//					print $this->structure[$fieldname]["options"]["help"];
+//				}
 
 				print "</textarea>";
 
@@ -865,6 +908,9 @@ class form_input
 						print "\" ";
 					}
 					
+					if ($this->structure[$fieldname]["options"]["disabled"] == "yes")
+						print "disabled=\"disabled\" ";
+					
 					print "type=\"radio\" style=\"border: 0px\" name=\"$fieldname\" value=\"$value\" id=\"". $fieldname ."_". $value ."\">";
 					print "<label for=\"". $fieldname ."_". $value ."\">". $translations[$value] ."</label><br>";
 				}
@@ -923,6 +969,9 @@ class form_input
 					print "\" ";
 				}
 
+				if ($this->structure[$fieldname]["options"]["disabled"] == "yes")
+					print "disabled=\"disabled\" ";
+					
 				print "type=\"checkbox\" style=\"border: 0px\" name=\"". $fieldname ."\" id=\"". $fieldname ."\">";
 
 
@@ -977,7 +1026,12 @@ class form_input
 
 
 				// start dropdown/select box
-				print "<select name=\"$fieldname\" size=\"1\" style=\"width: ". $this->structure[$fieldname]["options"]["width"] ."px;\"> ";
+				print "<select name=\"$fieldname\" size=\"1\" style=\"width: ". $this->structure[$fieldname]["options"]["width"] ."px;\"";
+				
+				if ($this->structure[$fieldname]["options"]["disabled"] == "yes")
+					print "disabled=\"disabled\" ";
+					
+				print "> ";
 
 
 				// if there is only 1 option avaliable, see if we should auto-select it.
@@ -1034,7 +1088,12 @@ class form_input
 			case "submit":
 				$translation = language_translate_string($this->language, $this->structure[$fieldname]["defaultvalue"]);
 
-				print "<input name=\"$fieldname\" type=\"submit\" value=\"$translation\">";
+				print "<input name=\"$fieldname\" type=\"submit\" value=\"$translation\"";
+				
+				if ($this->structure[$fieldname]["options"]["disabled"] == "yes")
+					print "disabled=\"disabled\" ";
+					
+				print ">";
 			break;
 
 			case "message":
@@ -1052,7 +1111,12 @@ class form_input
 				}
 
 				// input field
-				print "<input type=\"file\" name=\"$fieldname\"> <i>Note: File must be no larger than $upload_maxbytes.</i>";
+				print "<input type=\"file\" name=\"$fieldname\"";
+				
+				if ($this->structure[$fieldname]["options"]["disabled"] == "yes")
+					print "disabled=\"disabled\" ";
+					
+				print "> <i>Note: File must be no larger than $upload_maxbytes.</i>";
 
 				// optional label/description
 				if (isset($this->structure[$fieldname]["options"]["label"]))
