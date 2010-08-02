@@ -73,6 +73,12 @@ class page_output
 		$structure["sql"]	= "id_server='value'";
 		$this->obj_table->add_filter($structure);
 
+		$structure = NULL;
+		$structure["fieldname"] 	= "log_debug";
+		$structure["type"]		= "checkbox";
+		$structure["sql"]		= "log_type!='Debug'";
+		$structure["defaultvalue"]	= "on";
+		$this->obj_table->add_filter($structure);
 
 
 

@@ -64,6 +64,17 @@ class radius_logs
 			}
 		}
 
+		// flag known annoying messages as debug for easy filtering
+		if ($log_contents == "rlm_ldap: parsing radiusReplyItem failed: \n")
+		{
+			$log_type = "Debug";
+		}
+
+		if ($log_contents == "rlm_ldap: parsing radiusCheckItem failed: \n")
+		{
+			$log_type = "Debug";
+		}
+
 
 
 		// write log
