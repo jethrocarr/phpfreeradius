@@ -66,7 +66,7 @@ class page_output
 			}
 			else
 			{
-				$this->obj_table->data[$i]["sync_status"]	= "<span class=\"table_highlight_green\">". lang_trans("status_synced") ."</span>";
+				$this->obj_table->data[$i]["sync_status"]	= "<span class=\"table_highlight_open\">". lang_trans("status_synced") ."</span>";
 			}
 		}
 

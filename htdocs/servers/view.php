@@ -140,21 +140,35 @@ class page_output
 
 				if ($this->obj_radius_server->data["sync_status_config"])
 				{
-					$this->obj_form->structure["sync_status_config"]["defaultvalue"]	= "<span class=\"table_highlight_important\">". lang_trans("status_unsynced") ."</span> Last synced on ". time_format_humandate($this->obj_radius_server->data["api_sync_config"]) ." ". date("H:i:s", $this->obj_radius_server->data["api_sync_log"]) ."";
+					if ($this->obj_radius_server->data["sync_status_config"] == 1)
+					{
+						$this->obj_form->structure["sync_status_config"]["defaultvalue"]		= "<span class=\"table_highlight_important\">". lang_trans("status_unsynced") ."</span> Configuration has never been synced!";
+					}
+					else
+					{
+						$this->obj_form->structure["sync_status_config"]["defaultvalue"]	= "<span class=\"table_highlight_important\">". lang_trans("status_unsynced") ."</span> Last synced on ". time_format_humandate($this->obj_radius_server->data["api_sync_config"]) ." ". date("H:i:s", $this->obj_radius_server->data["api_sync_log"]) ."";
+					}
 				}
 				else
 				{
-					$this->obj_form->structure["sync_status_config"]["defaultvalue"]	= "<span class=\"table_highlight_green\">". lang_trans("status_synced") ."</span>";
+					$this->obj_form->structure["sync_status_config"]["defaultvalue"]	= "<span class=\"table_highlight_open\">". lang_trans("status_synced") ."</span>";
 				}
 
 
 				if ($this->obj_radius_server->data["sync_status_log"])
 				{
-					$this->obj_form->structure["sync_status_log"]["defaultvalue"]		= "<span class=\"table_highlight_important\">". lang_trans("status_unsynced") ."</span> Logging appears stale, last synced on ". time_format_humandate($this->obj_radius_server->data["api_sync_log"]) ." ". date("H:i:s", $this->obj_radius_server->data["api_sync_log"]) ."";
+					if ($this->obj_radius_server->data["sync_status_log"] == 1)
+					{
+						$this->obj_form->structure["sync_status_log"]["defaultvalue"]		= "<span class=\"table_highlight_important\">". lang_trans("status_unsynced") ."</span> No logs exist for this server!";
+					}
+					else
+					{
+						$this->obj_form->structure["sync_status_log"]["defaultvalue"]		= "<span class=\"table_highlight_important\">". lang_trans("status_unsynced") ."</span> Logging appears stale, last synced on ". time_format_humandate($this->obj_radius_server->data["api_sync_log"]) ." ". date("H:i:s", $this->obj_radius_server->data["api_sync_log"]) ."";
+					}
 				}
 				else
 				{
-					$this->obj_form->structure["sync_status_log"]["defaultvalue"]		= "<span class=\"table_highlight_green\">". lang_trans("status_synced") ."</span> Last log message delivered on ". time_format_humandate($this->obj_radius_server->data["api_sync_log"]) ." ". date("H:i:s", $this->obj_radius_server->data["api_sync_log"]) ."";
+					$this->obj_form->structure["sync_status_log"]["defaultvalue"]		= "<span class=\"table_highlight_open\">". lang_trans("status_synced") ."</span> Last log message delivered on ". time_format_humandate($this->obj_radius_server->data["api_sync_log"]) ." ". date("H:i:s", $this->obj_radius_server->data["api_sync_log"]) ."";
 				}
 			}
 		}
