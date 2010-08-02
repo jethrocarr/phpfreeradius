@@ -115,7 +115,19 @@ class radius_server
 			if (sql_get_singlevalue("SELECT value FROM config WHERE name='SYNC_STATUS_CONFIG'") != $sql_obj->data[0]["api_sync_config"])
 			{
 				// out of sync, set to date
-				$this->data["sync_status_config"]	= $sql_obj->data[0]["api_sync_config"];
+				if ($sql_obj->data[0]["api_sync_config"] == "0")
+				{
+					// if the config value is 0, will lead to problems further on in the processing
+					//
+					// this value should normally never end up as zero, but can happen if a developer
+					// has been doing development testing.
+					//
+					$this->data["sync_status_config"]	= 1;
+				}
+				else
+				{
+					$this->data["sync_status_config"]	= $sql_obj->data[0]["api_sync_config"];
+				}
 			}
 
 			if ((time() - $sql_obj->data[0]["api_sync_log"]) > 86400)
@@ -279,6 +291,14 @@ class radius_server
 		*/
 
 		$sql_obj->string	= "UPDATE `radius_servers` SET api_sync_config='$version' WHERE id='". $this->id ."' LIMIT 1";
+		$sql_obj->execute();
+
+
+		/*
+			Create a log entry
+		*/
+
+		$sql_obj->string	= "INSERT INTO logs (id_server, id_nas, timestamp, log_type, log_contents) VALUES ('". $this->id ."', '0', '". mktime() ."', 'Update', 'Server has applied configuration version $version')";
 		$sql_obj->execute();
 
 
