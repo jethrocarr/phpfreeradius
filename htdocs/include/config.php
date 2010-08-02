@@ -17,10 +17,10 @@ $GLOBALS["config"] = array();
 
 // define the application details
 $GLOBALS["config"]["app_name"]			= "phpfreeradius";
-$GLOBALS["config"]["app_version"]		= "1.0.2";
+$GLOBALS["config"]["app_version"]		= "1.1.0_beta_1";
 
 // define the schema version required
-$GLOBALS["config"]["schema_version"]		= "20100608";
+$GLOBALS["config"]["schema_version"]		= "20100803";
 
 
 
