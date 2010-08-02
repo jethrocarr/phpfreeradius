@@ -51,7 +51,7 @@ class page_output
 
 		$this->obj_table->sql_obj->prepare_sql_settable("logs");
 		$this->obj_table->sql_obj->prepare_sql_addjoin("LEFT JOIN radius_servers ON radius_servers.id = logs.id_server");
-		$this->obj_table->sql_obj->prepare_sql_addorderby_desc("timestamp");
+		$this->obj_table->sql_obj->prepare_sql_addorderby_desc("logs.id");
 
 		// acceptable filter options
 		$structure = NULL;
@@ -113,10 +113,8 @@ class page_output
 		}
 		else
 		{
-
 			// display the table
 			$this->obj_table->render_table_html();
-
 		}
 
 	
