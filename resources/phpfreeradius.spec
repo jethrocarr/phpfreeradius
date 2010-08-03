@@ -105,7 +105,7 @@ fi
 
 %post integration
 
-if [$1 == 0];
+if [ $1 == 0 ];
 then
 	# upgrading existing rpm
 	echo "Restarting logging process..."
@@ -147,7 +147,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 %config %dir %{_sysconfdir}/phpfreeradius
 %config %dir %{_sysconfdir}/cron.d/phpfreeradius-integration
-%attr(770,root,apache) %config(noreplace) %{_sysconfdir}/phpfreeradius/config-integration.php
+%attr(770,root,root) %config(noreplace) %{_sysconfdir}/phpfreeradius/config-integration.php
 %{_datadir}/phpfreeradius/scripts
 /etc/init.d/phpfreeradiuslogging
 
