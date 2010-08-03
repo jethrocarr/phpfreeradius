@@ -14,13 +14,14 @@ start()
 {
 	echo -n $"Starting phpfreeradiuslogging services:"
 	nohup php -q /usr/share/phpfreeradius/scripts/phpfreeradius_logpush.php >> /var/log/radius/phpfreeradius_logpush &
+	echo -n $! > /var/run/phpfreeradius_logpush.pid
 	echo ""
 }
 
 stop()
 {
 	echo -n "Stopping phpfreeradiuslogging services:"
-	pkill php
+	kill `cat /var/run/phpfreeradius_logpush.pid`
 	echo ""
 }
 
@@ -36,7 +37,7 @@ case "$1" in
         start
         ;;
   status)
-	status php
+	status -p /var/run/phpfreeradius_logpush.pid
         ;;
   *)
         echo $"Usage: $0 {start|stop|status|restart|reload}"
