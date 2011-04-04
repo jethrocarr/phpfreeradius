@@ -146,6 +146,8 @@ fwrite($fh, "\n");
 
 foreach ($data_nas as $nas)
 {
+	log_write("debug", "main", "Process NAS ". $nas["nas_hostname"] ."");
+
 	fwrite($fh, "# ". $nas["nas_hostname"] ."\n");
 
 	// check shortname
@@ -199,6 +201,11 @@ fwrite($fh, "\n");
 
 foreach ($data_nas as $nas)
 {
+	log_write("debug", "main", "Process Huntgroups for ". $nas["nas_hostname"] ."");
+
+	/*
+		Determine NAS IP/Hostname
+	*/
 
 	// determine the type of address
 	if (preg_match("/^(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:[.](?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}$/", $nas["nas_address"]))
@@ -232,6 +239,56 @@ foreach ($data_nas as $nas)
 	{
 		// radtest identified as 255.255.255.255
 		fwrite($fh, $nas["nas_ldapgroup"] . "\tNAS-IP-Address == 255.255.255.255\n");
+	}
+
+
+
+	/*
+		Write huntgroup conditions
+	*/
+
+	log_write("debug", "main", "Process Conditional Huntgroups for ". $nas["nas_hostname"] ."");
+
+
+	if (is_array($nas["nas_conditions"]))
+	{
+		foreach ($nas["nas_conditions"] as $condition)
+		{
+
+			// determine the type of address
+			if (preg_match("/^(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:[.](?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}$/", $nas["nas_address"]))
+			{
+				// single IP, write a rule
+				fwrite($fh, $condition["cond_ldapgroup"] . "\tNAS-IP-Address == ". $nas["nas_address"] .", ". $condition["cond_attribute"] ."\n");
+			}
+			elseif (preg_match("/^(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:[.](?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}\/[0-9]*$/", $nas["nas_address"]))
+			{
+				// subnet in CIDR notation
+				// we need to calculate all the IP addresses in this subnet and then write them all to the configuration file
+
+				$addresses = ipv4_subnet_members($nas["nas_address"]);
+
+				foreach ($addresses as $address)
+				{
+					fwrite($fh, $condition["cond_ldapgroup"] . "\tNAS-IP-Address == $address, ". $condition["cond_attribute"] ."\n");
+				}
+			}
+			else
+			{
+				// hostname
+				// need to fetch the associated IP address and then write to file
+
+				fwrite($fh, $condition["cond_ldapgroup"] . "\tNAS-IP-Address == ". gethostbyname($nas["nas_address"]) .", ". $condition["cond_attribute"] ."\n");
+			}
+
+
+			// special case for localhost (only used when testing)
+			if ($nas["nas_address"] == "127.0.0.1")
+			{
+				// radtest identified as 255.255.255.255
+				fwrite($fh, $condition["cond_ldapgroup"] . "\tNAS-IP-Address == 255.255.255.255, ". $condition["cond_attribute"] ."\n");
+			}
+		}
 	}
 
 
