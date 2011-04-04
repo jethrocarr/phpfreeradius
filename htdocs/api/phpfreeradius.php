@@ -221,7 +221,7 @@ class api_phpfreeradius
 		{
 			// fetch NAS configuration
 			$sql_obj		= New sql_query;
-			$sql_obj->string	= "SELECT nas_hostname, nas_shortname, nas_address, nas_secret, nas_types.nas_type as nas_type, nas_ldapgroup, nas_description FROM nas_devices LEFT JOIN nas_types ON nas_types.id = nas_devices.nas_type";
+			$sql_obj->string	= "SELECT nas_devices.id as id, nas_hostname, nas_shortname, nas_address, nas_secret, nas_types.nas_type as nas_type, nas_ldapgroup, nas_description FROM nas_devices LEFT JOIN nas_types ON nas_types.id = nas_devices.nas_type";
 			$sql_obj->execute();
 
 			if ($sql_obj->num_rows())
@@ -235,6 +235,7 @@ class api_phpfreeradius
 				{
 					$return_tmp			= array();
 
+					// general NAS information
 					$return_tmp["nas_hostname"]	= $data_nas["nas_hostname"];
 					$return_tmp["nas_shortname"]	= $data_nas["nas_shortname"];
 					$return_tmp["nas_address"]	= $data_nas["nas_address"];
@@ -242,6 +243,28 @@ class api_phpfreeradius
 					$return_tmp["nas_type"]		= $data_nas["nas_type"];
 					$return_tmp["nas_ldapgroup"]	= $data_nas["nas_ldapgroup"];
 					$return_tmp["nas_description"]	= $data_nas["nas_description"];
+
+					// additional conditions
+					$return_tmp["nas_conditions"]	= array();
+
+					$sql_obj_cond		= New sql_query;
+					$sql_obj_cond->string	= "SELECT station_id, nas_ldapgroup FROM nas_stationid WHERE id_nas='". $data_nas["id"] ."'";
+					$sql_obj_cond->execute();
+
+					if ($sql_obj_cond->num_rows())
+					{
+						$sql_obj_cond->fetch_array();
+
+						foreach ($sql_obj_cond->data as $data_cond)
+						{
+							$return_tmp2 = array();
+
+							$return_tmp2["cond_attribute"]	= "Called-Station-Id == ". $data_cond["station_id"] ."";
+							$return_tmp2["cond_ldapgroup"]	= $data_cond["nas_ldapgroup"];
+
+							$return_tmp["nas_conditions"][]	= $return_tmp2;
+						}
+					}
 
 					$return[]	= $return_tmp;
 				}

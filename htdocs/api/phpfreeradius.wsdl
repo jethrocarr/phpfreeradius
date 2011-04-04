@@ -15,7 +15,7 @@
 			<complexType name="fetch_nas_config">
 				<complexContent>
 					<restriction base="soapenc:Array">
-						<attribute ref="soapenc:arrayType" wsdl:arrayType="nas_config_row[]"/>
+						<attribute ref="soapenc:arrayType" wsdl:arrayType="fetch_nas_config_row[]"/>
 					</restriction>
 				</complexContent>
 			</complexType>
@@ -29,8 +29,27 @@
 					<element name="nas_type" type="xsd:string"/>
 					<element name="nas_ldapgroup" type="xsd:string"/>
 					<element name="nas_description" type="xsd:string"/>
+					<element name='nas_conditions' type='xsd1:fetch_nas_config_conditions'/>
 				</all>
 			</complexType>
+
+			<complexType name="fetch_nas_config_conditions">
+				<complexContent>
+					<restriction base="soapenc:Array">
+						<attribute ref="soapenc:arrayType" wsdl:arrayType="fetch_nas_config_conditions_row[]"/>
+					</restriction>
+				</complexContent>
+			</complexType>
+
+			<complexType name="fetch_nas_config_conditions_row">
+				<all>
+					<element name="cond_attribute" type="xsd:string"/>
+					<element name="cond_ldapgroup" type="xsd:string"/>
+				</all>
+			</complexType>
+
+
+
 		</schema>
 	</types>
 
