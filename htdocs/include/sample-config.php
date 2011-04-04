@@ -1,10 +1,12 @@
 <?php
 /*
-	Sample Configuration File
+	phpfreeradius sample configuration
+
+	This file provides the core configuration options such as database logins and debug
+	options. For further control, the configuration page after login offers additional
+	options and features.
 
 	This file should be read-only by the httpd user. All other users should be denied.
-
-	Copy this file to config-settings.php before editing.
 */
 
 
@@ -26,6 +28,7 @@ $config["ldap_port"]		= "389";					// LDAP server port
 $config["ldap_dn"]		= "ou=auth,dc=example,dc=com";			// DN to run queries under
 $config["ldap_manager_user"]	= "cn=Manager,dc=example,dc=com";		// LDAP manager
 $config["ldap_manager_pwd"]	= "password";
+$config["ldap_ssl"]		= "disable";					// use TLS/SSL - enable/disable
 
 
 
