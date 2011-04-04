@@ -46,7 +46,7 @@ if (user_permissions_get('radiusadmins'))
 	$obj_nas_device->data["nas_type"]			= security_form_input_predefined("int", "nas_type", 1, "");
 	$obj_nas_device->data["nas_description"]		= security_form_input_predefined("any", "nas_description", 0, "");
 	$obj_nas_device->data["nas_secret"]			= security_form_input_predefined("any", "nas_secret", 1, "");
-	$obj_nas_device->data["nas_ldapgroup"]			= security_form_input_predefined("any", "nas_ldapgroup", 1, "");
+	$obj_nas_device->data["nas_ldapgroup"]			= security_form_input_predefined("any", "nas_station_0_ldapgroup", 1, "You must select an default LDAP group for authentication");
 
 
 	// shortname
@@ -91,6 +91,45 @@ if (user_permissions_get('radiusadmins'))
 		$obj_nas_device->data["nas_dns_record_a"]			= security_form_input_predefined("any", "nas_dns_record_a", 0, "");
 		$obj_nas_device->data["nas_dns_record_ptr"]			= security_form_input_predefined("any", "nas_dns_record_ptr", 0, "");
 		$obj_nas_device->data["nas_dns_record_ptr_altip"]		= security_form_input_predefined("ipv4", "nas_dns_record_ptr_altip", 0, "");
+	}
+
+
+
+	// nas called station IDs
+	$obj_nas_device->data["num_stationids"]					= security_form_input_predefined("any", "num_stationids", 1, "");
+	$obj_nas_device->data["stationids"]					= array();
+
+	for ($i=1; $i <= $obj_nas_device->data["num_stationids"]; $i++)
+	{
+		$nas_station = array();
+
+		$nas_station["stationid"]					= security_form_input_predefined("any", "nas_station_". $i ."_stationid", 0, "");
+		$nas_station["ldapgroup"] 					= security_form_input_predefined("any", "nas_station_". $i ."_ldapgroup", 0, "");
+		$nas_station["delete_undo"] 					= security_form_input_predefined("any", "nas_station_". $i ."_delete_undo", 0, "");
+
+
+		if ($nas_station["delete_undo"] != "true")
+		{
+			if (!empty($nas_station["stationid"]) && !empty($nas_station["ldapgroup"]))
+			{
+				$obj_nas_device->data["stationids"][]				= $nas_station;
+			}
+			else
+			{
+				if (!empty($nas_station["stationid"]) && empty($nas_station["ldapgroup"]))
+				{
+					log_write("error", "process", "You must assign an LDAP Group to the specified Called-Station-ID");
+					error_flag_field("nas_station_". $i ."_ldapgroup");
+				}
+				
+				if (empty($nas_station["stationid"]) && !empty($nas_station["ldapgroup"]))
+				{
+					log_write("error", "process", "You must assign a both a Called-Station-ID and an LDAP group");
+					error_flag_field("nas_station_". $i ."_stationid");
+				}
+
+			}
+		}
 	}
 
 

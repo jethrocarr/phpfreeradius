@@ -17,6 +17,8 @@ class page_output
 
 	function page_output()
 	{
+		// include custom scripts and/or logic
+		$this->requires["javascript"][]	= "include/javascript/nasdevices.js";
 
 		// initate object
 		$this->obj_nas_device		= New nas_device;
@@ -198,23 +200,153 @@ class page_output
 	
 
 
-		// ldap groups
-		$structure = NULL;
+		/*
+			Called Station ID Identification
 
+			This section of the interface allows the user to configure the LDAP group
+			assignment on a Called-Station-ID basis, which allows one NAS with multiple
+			different authentication sections to validate users against LDAP.
+		*/
+
+		// lookup LDAP users/groups
 		$obj_ldap = New ldap_auth_lookup;
 		$obj_ldap->list_groups();
+
+
+		// descriptive field
+		$structure = NULL;
+		$structure["fieldname"]			= "nas_station_description";
+		$structure["type"]			= "message";
+		$structure["defaultvalue"]		= "<p>". lang_trans("nas_station_description") ."</p>";
+		$this->obj_form->add_input($structure);
+
+		$structure = NULL;
+		$structure["fieldname"]			= "nas_station_description2";
+		$structure["type"]			= "message";
+		$structure["defaultvalue"]		= "<p>". lang_trans("nas_station_description2") ."</p>";
+		$this->obj_form->add_input($structure);
+
+
+
+		// called station ID authentication
+		if ($_SESSION["error"]["num_stationids"])
+		{
+			$num_stationid  = $_SESSION["error"]["num_stationids"];
+		}
+		elseif ($this->obj_nas_device->id)
+		{
+			$sql_obj		= New sql_query;
+			$sql_obj->string	= "SELECT id FROM nas_stationid WHERE id_nas='". $this->obj_nas_device->id ."'";
+			$sql_obj->execute();
+
+			$num_stationid = $sql_obj->num_rows();
+		}
+
+		if ($num_stationid < 1)
+		{
+			$num_stationid = 1;
+		}
+
+		$structure = NULL;
+		$structure["fieldname"]		= "num_stationids";
+		$structure["type"]		= "hidden";
+		$structure["defaultvalue"]	= $num_stationid;
+		$this->obj_form->add_input($structure);
+
+
+		// The first record is a special meta-entry which maps to the default LDAP group value
+		$structure = NULL;
+		$structure["fieldname"]		= "nas_station_0_stationid";
+		$structure["type"]		= "text";
+		$structure["defaultvalue"]	= "Default LDAP Group for Authentication";
+		$this->obj_form->add_input($structure);
+
+		$structure = NULL;
 
 		foreach ($obj_ldap->data as $group_name)
 		{
 			$structure["values"][]	= $group_name;
 		}
 
-		$structure["fieldname"] 	= "nas_ldapgroup";
-		$structure["type"]		= "dropdown";
-		$structure["options"]["req"]	= "yes";
+		$structure["fieldname"] 		= "nas_station_0_ldapgroup";
+		$structure["type"]			= "dropdown";
+		$structure["options"]["req"]		= "yes";
+		$this->obj_form->add_input($structure);
+
+
+		// structure form row
+		$this->obj_form->subforms_grouped["nas_auth_users"]["nas_station_0"][]		= "nas_station_0_stationid";
+		$this->obj_form->subforms_grouped["nas_auth_users"]["nas_station_0"][]		= "nas_station_0_ldapgroup";
+
+
+		// header
+		$structure = NULL;
+		$structure["fieldname"]		= "nas_station_header_stationid";
+		$structure["type"]		= "text";
+		$structure["defaultvalue"]	= lang_trans("header_stationid");
 		$this->obj_form->add_input($structure);
 		
-			
+		$structure = NULL;
+		$structure["fieldname"]		= "nas_station_header_ldapgroup";
+		$structure["type"]		= "text";
+		$structure["defaultvalue"]	= lang_trans("header_ldap_group");
+		$this->obj_form->add_input($structure);
+
+		$structure = NULL;
+		$structure["fieldname"]		= "nas_station_header_controls";
+		$structure["type"]		= "text";
+		$structure["defaultvalue"]	= "";
+		$this->obj_form->add_input($structure);
+
+		$this->obj_form->subforms_grouped["nas_auth_users"]["nas_station_header"][]		= "nas_station_header_stationid";
+		$this->obj_form->subforms_grouped["nas_auth_users"]["nas_station_header"][]		= "nas_station_header_ldapgroup";
+		$this->obj_form->subforms_grouped["nas_auth_users"]["nas_station_header"][]		= "nas_station_header_controls";
+
+
+		// user-added entries
+		for ($i=1; $i <= $num_stationid; $i++)
+		{
+			// Called Station ID
+			$structure = NULL;
+			$structure["fieldname"]			= "nas_station_". $i ."_stationid";
+			$structure["type"]			= "input";
+			$structure["options"]["width"]		= "300";
+			$this->obj_form->add_input($structure);
+
+			// LDAP group
+			$structure = NULL;
+
+			foreach ($obj_ldap->data as $group_name)
+			{
+				$structure["values"][]	= $group_name;
+			}
+
+			$structure["fieldname"] 		= "nas_station_". $i ."_ldapgroup";
+			$structure["type"]			= "dropdown";
+			$this->obj_form->add_input($structure);
+
+			// controls link
+			$structure = NULL;
+			$structure["fieldname"]		= "nas_station_". $i ."_controls";
+			$structure["type"]		= "message";
+			$structure["defaultvalue"]	= "<input name=\"nas_station_". $i ."_delete_undo\" type=\"hidden\" value=\"false\"><strong class=\"delete_undo\"><a href=\"\" class=\"button_small\">delete</a></strong></input>";
+			$this->obj_form->add_input($structure);
+
+
+			// structure form row
+			$this->obj_form->subforms_grouped["nas_auth_users"]["nas_station_$i"][]		= "nas_station_". $i ."_stationid";
+			$this->obj_form->subforms_grouped["nas_auth_users"]["nas_station_$i"][]		= "nas_station_". $i ."_ldapgroup";
+			$this->obj_form->subforms_grouped["nas_auth_users"]["nas_station_$i"][]		= "nas_station_". $i ."_controls";
+		}
+
+
+		$structure = NULL;
+		$structure["fieldname"]		= "nas_station_addbutton";
+		$structure["type"]		= "message";
+		$structure["defaultvalue"]	= "<strong class=\"add_stationid\"><a href=\"\" class=\"button_small\">Add Called-Station-ID Access Mapping</a></strong>";
+		$this->obj_form->add_input($structure);
+		
+
 
 		// hidden section
 		$structure = NULL;
@@ -239,8 +371,21 @@ class page_output
 			$this->obj_form->subforms["nas_dns"]	= array("nas_dns_record_na", "nas_dns_record_a", "nas_dns_record_ptr", "nas_dns_record_ptr_altip");
 		}
 
-		$this->obj_form->subforms["nas_auth"]		= array("nas_secret", "nas_ldapgroup");
-		$this->obj_form->subforms["hidden"]		= array("id_nas");
+		$this->obj_form->subforms["nas_auth"]				= array("nas_secret");
+		$this->obj_form->subforms["nas_auth_users"][]			= "nas_station_description";
+		$this->obj_form->subforms["nas_auth_users"][]			= "nas_station_0";
+		$this->obj_form->subforms["nas_auth_users"][]			= "nas_station_description2";
+		$this->obj_form->subforms["nas_auth_users"][]			= "nas_station_header";
+
+		for ($i=1; $i <= $num_stationid; $i++)
+		{
+			$this->obj_form->subforms["nas_auth_users"][]		= "nas_station_". $i;
+		}
+
+		$this->obj_form->subforms["nas_auth_users"][]			= "nas_station_addbutton";
+
+
+		$this->obj_form->subforms["hidden"]		= array("id_nas", "num_stationids");
 		$this->obj_form->subforms["submit"]		= array("submit");
 
 
@@ -259,7 +404,7 @@ class page_output
 				$this->obj_form->structure["nas_type"]["defaultvalue"]				= $this->obj_nas_device->data["nas_type"];
 				$this->obj_form->structure["nas_description"]["defaultvalue"]			= $this->obj_nas_device->data["nas_description"];
 				$this->obj_form->structure["nas_secret"]["defaultvalue"]			= $this->obj_nas_device->data["nas_secret"];
-				$this->obj_form->structure["nas_ldapgroup"]["defaultvalue"]			= $this->obj_nas_device->data["nas_ldapgroup"];
+				$this->obj_form->structure["nas_station_0_ldapgroup"]["defaultvalue"]		= $this->obj_nas_device->data["nas_ldapgroup"];
 
 				if ($GLOBALS["config"]["NAMEDMANAGER_FEATURE"])
 				{
@@ -300,6 +445,20 @@ class page_output
 					$this->obj_form->structure["nas_address_host"]["defaultvalue"]		= $this->obj_nas_device->data["nas_address"];
 				}
 
+
+				// load NAS Called-Station-IDs
+				if (is_array($this->obj_nas_device->data["stationids"]))
+				{
+					$i = 0;
+
+					foreach ($this->obj_nas_device->data["stationids"] as $nas_device)
+					{
+						$i++;
+
+						$this->obj_form->structure["nas_station_". $i ."_stationid"]["defaultvalue"]		= $nas_device["stationid"];
+						$this->obj_form->structure["nas_station_". $i ."_ldapgroup"]["defaultvalue"]		= $nas_device["ldapgroup"];
+					}
+				}
 			}
 		}
 	}

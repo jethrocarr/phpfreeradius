@@ -231,6 +231,29 @@ class nas_device
 				$this->data["nas_shortname"] = $this->data["nas_hostname"];
 			}
 
+
+			// fetch any/all stationids for the selected NAS
+			$sql_obj		= New sql_query;
+			$sql_obj->string	= "SELECT station_id, nas_ldapgroup FROM nas_stationid WHERE id_nas='". $this->id ."'";
+			$sql_obj->execute();
+
+			if ($sql_obj->num_rows())
+			{
+				$sql_obj->fetch_array();
+
+				$this->data["stationids"] = array();
+
+				foreach ($sql_obj->data as $data_sql)
+				{
+					$nas_station = array();
+
+					$nas_station["stationid"]			= $data_sql["station_id"];
+					$nas_station["ldapgroup"]			= $data_sql["nas_ldapgroup"];
+
+					$this->data["stationids"][]			= $nas_station;
+				}
+			}
+
 			return 1;
 		}
 
@@ -328,12 +351,33 @@ class nas_device
 
 
 
+		/*
+			Update NAS stationid records (if any)
+		*/
+
+		$sql_obj		= New sql_query;
+		$sql_obj->string	= "DELETE FROM `nas_stationid` WHERE id_nas='". $this->id ."'";
+		$sql_obj->execute();
+
+		if (is_array($this->data["stationids"]))
+		{
+			foreach ($this->data["stationids"] as $nas_station)
+			{
+				$sql_obj->string	= "INSERT INTO `nas_stationid` (id_nas, station_id, nas_ldapgroup) VALUES ('". $this->id ."', '". $nas_station["stationid"]  ."', '". $nas_station["ldapgroup"] ."')";
+				$sql_obj->execute();
+			}
+		}
+
+
 
 		/*
 			Update Configuration Version
 		*/
+		
+		$sql_obj		= New sql_query;
 		$sql_obj->string	= "UPDATE `config` SET value='". time() ."' WHERE name='SYNC_STATUS_CONFIG' LIMIT 1";
 		$sql_obj->execute();
+
 
 
 		/*
