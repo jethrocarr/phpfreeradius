@@ -332,7 +332,18 @@ $data_huntgroups = array();
 
 foreach ($data_nas as $nas)
 {
+	// default huntgroups
 	$data_huntgroups[ $nas["nas_ldapgroup"] ] = 1;
+
+
+	// conditional huntgroups
+	if (is_array($nas["nas_conditions"]))
+	{
+		foreach ($nas["nas_conditions"] as $condition)
+		{
+			$data_huntgroups[ $condition["cond_ldapgroup"] ] = 1;
+		}
+	}	
 }
 
 
