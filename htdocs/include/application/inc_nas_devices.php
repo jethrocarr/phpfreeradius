@@ -873,6 +873,7 @@ class ui_nas_device
 		$structure["fieldname"] 	= "nas_secret";
 		$structure["type"]		= "input";
 		$structure["options"]["req"]	= "yes";
+		$structure["defaultvalue"]	= $GLOBALS["config"]["DEFAULT_NAS_PASSWORD"];
 		$this->obj_form->add_input($structure);
 	
 
