@@ -1,6 +1,6 @@
 Summary: A web-based management system for FreeRadius servers, consisting of a PHP web interface and some PHP CLI components to hook into FreeRadius.
 Name: phpfreeradius
-Version: 1.2.1
+Version: 1.2.2
 Release: 1%{dist}
 License: AGPLv3
 URL: http://www.amberdms.com/phpfreeradius
@@ -153,6 +153,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Jun 28 2011 Jethro Carr <jethro.carr@amberdms.com> 1.2.2
+- Updated to 1.2.2 release
 * Wed Apr 13 2011 Jethro Carr <jethro.carr@amberdms.com> 1.2.1
 - Updated to 1.2.1 release (bug fixes only)
 * Tue Apr  5 2011 Jethro Carr <jethro.carr@amberdms.com> 1.2.0
