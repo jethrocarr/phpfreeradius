@@ -25,6 +25,7 @@
 					<element name="nas_hostname" type="xsd:string"/>
 					<element name="nas_shortname" type="xsd:string"/>
 					<element name="nas_address" type="xsd:string"/>
+					<element name="nas_address_2" type="xsd:string"/>
 					<element name="nas_secret" type="xsd:string"/>
 					<element name="nas_type" type="xsd:string"/>
 					<element name="nas_ldapgroup" type="xsd:string"/>

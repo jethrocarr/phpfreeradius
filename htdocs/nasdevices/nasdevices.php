@@ -37,14 +37,15 @@ class page_output
 		// define all the columns and structure
 		$this->obj_table->add_column("standard", "nas_hostname", "");
 		$this->obj_table->add_column("standard", "nas_address", "");
+		$this->obj_table->add_column("standard", "nas_address_2", "");
 		$this->obj_table->add_column("standard", "nas_type", "nas_types.nas_type");
 		$this->obj_table->add_column("standard", "nas_ldapgroup", "");
 		$this->obj_table->add_column("standard", "nas_description", "");
 
 		// defaults
-		$this->obj_table->columns		= array("nas_hostname", "nas_address", "nas_type", "nas_ldapgroup", "nas_description");
+		$this->obj_table->columns		= array("nas_hostname", "nas_address", "nas_address_2", "nas_type", "nas_ldapgroup", "nas_description");
 		$this->obj_table->columns_order		= array("nas_hostname");
-		$this->obj_table->columns_order_options	= array("nas_hostname", "nas_address", "nas_type", "nas_ldapgroup");
+		$this->obj_table->columns_order_options	= array("nas_hostname", "nas_address", "nas_address_2", "nas_type", "nas_ldapgroup");
 
 		$this->obj_table->sql_obj->prepare_sql_settable("nas_devices");
 		$this->obj_table->sql_obj->prepare_sql_addjoin("LEFT JOIN nas_types ON nas_types.id = nas_devices.nas_type");

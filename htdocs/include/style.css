@@ -640,3 +640,10 @@ div[class*='toggle']
 	background-color:	#c3e5f1;
 }
 
+/* nicer help messages */
+.helpmessage
+{
+    color:    #ABABAB;
+}
+
+

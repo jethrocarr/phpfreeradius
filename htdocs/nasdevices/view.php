@@ -120,6 +120,7 @@ class page_output extends ui_nas_device
 					// single IP
 					$this->obj_form->structure["nas_address_type"]["defaultvalue"]		= "ipv4_single";
 					$this->obj_form->structure["nas_address_ipv4"]["defaultvalue"]		= $this->obj_nas_device->data["nas_address"];
+					$this->obj_form->structure["nas_address_2"]["defaultvalue"]		= $this->obj_nas_device->data["nas_address_2"];
 				}
 				elseif (preg_match("/^(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:[.](?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}\/[0-9]*$/", $this->obj_nas_device->data["nas_address"]))
 				{

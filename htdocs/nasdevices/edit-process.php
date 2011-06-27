@@ -67,6 +67,7 @@ if (user_permissions_get('radiusadmins'))
 	{
 		case "ipv4_single":
 			$obj_nas_device->data["nas_address"]	= security_form_input_predefined("ipv4", "nas_address_ipv4", 1, "");
+			$obj_nas_device->data["nas_address_2"]	= security_form_input_predefined("ipv4", "nas_address_2", 0, "");
 		break;
 
 		case "ipv4_range":

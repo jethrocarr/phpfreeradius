@@ -341,6 +341,7 @@ class nas_device
 						."nas_hostname='". $this->data["nas_hostname"] ."', "
 						."nas_shortname='". $this->data["nas_shortname"] ."', "
 						."nas_address='". $this->data["nas_address"] ."', "
+						."nas_address_2='". $this->data["nas_address_2"] ."', "
 						."nas_secret='". $this->data["nas_secret"] ."', "
 						."nas_type='". $this->data["nas_type"] ."', "
 						."nas_ldapgroup='". $this->data["nas_ldapgroup"] ."', "
@@ -789,10 +790,19 @@ class ui_nas_device
 		$structure["options"]["label"]	= " ". lang_trans("help_nas_address_ipv4");
 		$this->obj_form->add_input($structure);
 
+		$structure = NULL;
+		$structure["fieldname"]		= "nas_address_2";
+		$structure["type"]		= "input";
+		$structure["options"]["help"]	= lang_trans("help_nas_address_2_inline");
+		$structure["options"]["label"]	= " ". lang_trans("help_nas_address_2");
+		$this->obj_form->add_input($structure);
+
+
 
 		$this->obj_form->add_action("nas_address_type", "ipv4_single", "nas_address_ipv4_range", "hide");
 		$this->obj_form->add_action("nas_address_type", "ipv4_single", "nas_address_host", "hide");
 		$this->obj_form->add_action("nas_address_type", "ipv4_single", "nas_address_ipv4", "show");
+		$this->obj_form->add_action("nas_address_type", "ipv4_single", "nas_address_2", "show");
 
 		$this->obj_form->add_action("nas_address_type", "ipv4_single", "nas_dns_record_na", "hide");
 		$this->obj_form->add_action("nas_address_type", "ipv4_single", "nas_dns_record_a", "show");
@@ -802,6 +812,7 @@ class ui_nas_device
 		$this->obj_form->add_action("nas_address_type", "ipv4_range", "nas_address_ipv4_range", "show");
 		$this->obj_form->add_action("nas_address_type", "ipv4_range", "nas_address_host", "hide");
 		$this->obj_form->add_action("nas_address_type", "ipv4_range", "nas_address_ipv4", "hide");
+		$this->obj_form->add_action("nas_address_type", "ipv4_range", "nas_address_2", "hide");
 
 		$this->obj_form->add_action("nas_address_type", "ipv4_range", "nas_dns_record_na", "show");
 		$this->obj_form->add_action("nas_address_type", "ipv4_range", "nas_dns_record_a", "hide");
@@ -811,6 +822,7 @@ class ui_nas_device
 		$this->obj_form->add_action("nas_address_type", "hostname", "nas_address_ipv4_range", "hide");
 		$this->obj_form->add_action("nas_address_type", "hostname", "nas_address_host", "show");
 		$this->obj_form->add_action("nas_address_type", "hostname", "nas_address_ipv4", "hide");
+		$this->obj_form->add_action("nas_address_type", "hostname", "nas_address_2", "hide");
 	
 		$this->obj_form->add_action("nas_address_type", "hostname", "nas_dns_record_na", "show");
 		$this->obj_form->add_action("nas_address_type", "hostname", "nas_dns_record_a", "hide");
@@ -1042,7 +1054,7 @@ class ui_nas_device
 		
 		
 		// define subforms
-		$this->obj_form->subforms["nas_details"]	= array("nas_hostname", "nas_shortname", "nas_address_type", "nas_address_ipv4", "nas_address_host", "nas_address_ipv4_range", "nas_type", "nas_description");
+		$this->obj_form->subforms["nas_details"]	= array("nas_hostname", "nas_shortname", "nas_address_type", "nas_address_ipv4", "nas_address_2", "nas_address_host", "nas_address_ipv4_range", "nas_type", "nas_description");
 
 		if ($GLOBALS["config"]["NAMEDMANAGER_FEATURE"] == "enabled")
 		{
