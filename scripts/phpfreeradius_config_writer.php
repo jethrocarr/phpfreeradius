@@ -212,6 +212,12 @@ foreach ($data_nas as $nas)
 	{
 		// single IP, write a rule
 		fwrite($fh, $nas["nas_ldapgroup"] . "\tNAS-IP-Address == ". $nas["nas_address"] ."\n");
+
+		// optional secondary IP address
+		if (!empty($nas["nas_address_2"]))
+		{
+			fwrite($fh, $nas["nas_ldapgroup"] . "\tNAS-IP-Address == ". $nas["nas_address_2"] ."\n");
+		}
 	}
 	elseif (preg_match("/^(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:[.](?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}\/[0-9]*$/", $nas["nas_address"]))
 	{
@@ -260,6 +266,12 @@ foreach ($data_nas as $nas)
 			{
 				// single IP, write a rule
 				fwrite($fh, $condition["cond_ldapgroup"] . "\tNAS-IP-Address == ". $nas["nas_address"] .", ". $condition["cond_attribute"] ."\n");
+			
+				// optional secondary address
+				if (!empty($nas["nas_address_2"]))
+				{
+					fwrite($fh, $condition["cond_ldapgroup"] . "\tNAS-IP-Address == ". $nas["nas_address_2"] .", ". $condition["cond_attribute"] ."\n");
+				}
 			}
 			elseif (preg_match("/^(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:[.](?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}\/[0-9]*$/", $nas["nas_address"]))
 			{
