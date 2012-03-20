@@ -33,6 +33,16 @@ $config["log_file"]		= "/var/log/radius";
 
 
 /*
+	Lock File
+
+	Used to prevent clashes when multiple instances are accidently run.
+*/
+
+$config["lock_file"]		= "/var/lock/phpfreeradius_lock";
+
+
+
+/*
 	Radius Configuration Files
 */
 
