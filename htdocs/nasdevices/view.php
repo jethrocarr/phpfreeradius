@@ -31,7 +31,11 @@ class page_output extends ui_nas_device
 		$this->obj_menu_nav = New menu_nav;
 
 		$this->obj_menu_nav->add_item("Adjust NAS Configuration", "page=nasdevices/view.php&id=". $this->obj_nas_device->id ."", TRUE);
-		$this->obj_menu_nav->add_item("View NAS-Specific Logs", "page=nasdevices/logs.php&id=". $this->obj_nas_device->id ."");
+		
+		if ($GLOBALS["config"]["FEATURE_LOGS_ENABLE"])
+		{
+			$this->obj_menu_nav->add_item("View NAS-Specific Logs", "page=nasdevices/logs.php&id=". $this->obj_nas_device->id ."");
+		}
 		$this->obj_menu_nav->add_item("Delete NAS", "page=nasdevices/delete.php&id=". $this->obj_nas_device->id ."");
 	}
 

@@ -79,6 +79,11 @@ class page_output
 			{
 				$this->obj_table->data[$i]["sync_status_log"] = "<span class=\"table_highlight_open\">". lang_trans("status_synced") ."</span>";
 			}
+
+			if (!$GLOBALS["config"]["FEATURE_LOGS_ENABLE"])
+			{			
+				$this->obj_table->data[$i]["sync_status_log"] = "<span class=\"table_highlight_disabled\">". lang_trans("status_disabled") ."</span>";
+			}
 		}
 
 	}
@@ -103,9 +108,12 @@ class page_output
 			$this->obj_table->add_link("tbl_lnk_details", "servers/view.php", $structure);
 
 			// logging link
-			$structure = NULL;
-			$structure["id"]["column"]	= "id";
-			$this->obj_table->add_link("tbl_lnk_logs", "servers/logs.php", $structure);
+			if ($GLOBALS["config"]["FEATURE_LOGS_ENABLE"])
+			{
+				$structure = NULL;
+				$structure["id"]["column"]	= "id";
+				$this->obj_table->add_link("tbl_lnk_logs", "servers/logs.php", $structure);
+			}
 
 			// delete link
 			$structure = NULL;

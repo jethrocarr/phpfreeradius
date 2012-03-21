@@ -127,13 +127,36 @@ class page_output
 		$this->obj_form->add_action("NAMEDMANAGER_FEATURE", "enabled", "NAMEDMANAGER_DEFAULT_PTR", "show");
 
 
-		// miscellaneous configurations
+		// logging options
+		$structure = NULL;
+		$structure["fieldname"]					= "FEATURE_LOGS_ENABLE";
+		$structure["type"]					= "checkbox";
+		$structure["options"]["no_translate_fieldname"]		= "yes";
+		$structure["options"]["label"]				= " Enable logging functionality.";
+		$this->obj_form->add_input($structure);
+
 		$structure = NULL;
 		$structure["fieldname"]					= "LOG_UPDATE_INTERVAL";
 		$structure["type"]					= "input";
 		$structure["options"]["no_translate_fieldname"]		= "yes";
 		$structure["options"]["label"]				= " seconds";
+		$structure["options"]["width"]				= "50";
 		$this->obj_form->add_input($structure);
+
+		$structure = NULL;
+		$structure["fieldname"]					= "LOG_RETENTION_PERIOD";
+		$structure["type"]					= "input";
+		$structure["options"]["no_translate_fieldname"]		= "yes";
+		$structure["options"]["label"]				= " Delete logs after defined number of days (0 to disable).";
+		$structure["options"]["width"]				= "50";
+		$this->obj_form->add_input($structure);
+
+
+		$this->obj_form->add_action("FEATURE_LOGS_ENABLE", "default", "LOG_UPDATE_INTERVAL", "hide");
+		$this->obj_form->add_action("FEATURE_LOGS_ENABLE", "default", "LOG_RETENTION_PERIOD", "hide");
+
+		$this->obj_form->add_action("FEATURE_LOGS_ENABLE", "1", "LOG_RETENTION_PERIOD", "show");
+		$this->obj_form->add_action("FEATURE_LOGS_ENABLE", "1", "LOG_UPDATE_INTERVAL", "show");
 
 
 		// submit section
@@ -149,7 +172,8 @@ class page_output
 		$this->obj_form->subforms["config_defaults"]		= array("DEFAULT_NAS_PASSWORD");
 		$this->obj_form->subforms["config_dateandtime"]		= array("DATEFORMAT", "TIMEZONE_DEFAULT");
 		$this->obj_form->subforms["config_namedmanager"]	= array("NAMEDMANAGER_FEATURE", "NAMEDMANAGER_API_URL", "NAMEDMANAGER_API_KEY", "NAMEDMANAGER_DEFAULT_A", "NAMEDMANAGER_DEFAULT_PTR");
-		$this->obj_form->subforms["config_miscellaneous"]	= array("LOG_UPDATE_INTERVAL");
+		$this->obj_form->subforms["config_logs"]		= array("FEATURE_LOGS_ENABLE", "LOG_UPDATE_INTERVAL", "LOG_RETENTION_PERIOD");
+		//$this->obj_form->subforms["config_miscellaneous"]	= array();
 		$this->obj_form->subforms["submit"]			= array("submit");
 
 		if (error_check())

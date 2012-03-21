@@ -96,9 +96,12 @@ class page_output
 			$this->obj_table->add_link("tbl_lnk_details", "nasdevices/view.php", $structure);
 
 			// logging link
-			$structure = NULL;
-			$structure["id"]["column"]	= "id";
-			$this->obj_table->add_link("tbl_lnk_logs", "nasdevices/logs.php", $structure);
+			if ($GLOBALS["config"]["FEATURE_LOGS_ENABLE"])
+			{
+				$structure = NULL;
+				$structure["id"]["column"]	= "id";
+				$this->obj_table->add_link("tbl_lnk_logs", "nasdevices/logs.php", $structure);
+			}
 
 			// delete link
 			$structure = NULL;
