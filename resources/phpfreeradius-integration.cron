@@ -6,4 +6,7 @@
 # check for new configuration every minute
 */1 * * * * root php -q /usr/share/phpfreeradius/scripts/phpfreeradius_config_writer.php >> /var/log/radius/phpfreeradius_config_writer
 
+# PHP slowly leaks memory, restart the process weekly to prevent it getting too large over months
+01 01 * * 0 root /etc/init.d/phpfreeradiuslogging restart >> /dev/null 2>&1
+
 
